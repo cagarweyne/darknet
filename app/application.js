@@ -40,6 +40,7 @@ var visApp = (function() {
     for ( i = 0; i < realData.length; i ++ ) {
 
       var vertex = new THREE.Vector3();
+
       vertex.x = realData[i].x;
       vertex.y = realData[i].y;
       vertex.z = 2000 * Math.random();
