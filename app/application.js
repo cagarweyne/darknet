@@ -1,7 +1,7 @@
 "use strict";
 var THREE = require('three');
-// var Detector = require('./libs/Detector');
 var OrbitControls = require('three-orbit-controls')(THREE);
+var $ = require('jquery');
 
 var visApp = (function() {
 
@@ -20,10 +20,14 @@ var visApp = (function() {
     container = document.createElement( 'div' );
     document.body.appendChild( container );
 
-    camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 3000 );
+    camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
+    // camera.position.x = 20;
+    // camera.position.y = 0;
+    // camera.position.z = 1000;
+
     camera.position.x = 20;
     camera.position.y = 0;
-    camera.position.z = 1000;
+    camera.position.z = 1400;
 
     scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2( 0x000000, 0.00009 );
@@ -31,6 +35,10 @@ var visApp = (function() {
     geometry = new THREE.Geometry();
 
     sprite = new THREE.TextureLoader().load( "ball.png" );
+
+    $.getJSON('https://portal.intelliagg.com/sites.json', function(data){
+      console.log('>>>', data);
+    });
 
     for ( i = 0; i < 25000; i ++ ) {
 
