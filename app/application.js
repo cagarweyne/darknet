@@ -2,9 +2,10 @@
 var THREE = require('three');
 var OrbitControls = require('three-orbit-controls')(THREE);
 var $ = require('jquery');
+var getCoordinates = require('./libs/getCoordinates');
 
 var visApp = (function() {
-
+  $.getJSON('https://portal.intelliagg.com/sites.json', function(data){
   var container;
   var camera, scene, renderer, particles, geometry, material, i, h, color, colors = [], sprite, size;
   var mouseX = 0, mouseY = 0;
@@ -16,14 +17,14 @@ var visApp = (function() {
   animate();
 
   function init() {
+    var realData;
+    realData = getCoordinates(data);
+    console.log(realData);
 
     container = document.createElement( 'div' );
     document.body.appendChild( container );
 
     camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
-    // camera.position.x = 20;
-    // camera.position.y = 0;
-    // camera.position.z = 1000;
 
     camera.position.x = 20;
     camera.position.y = 0;
@@ -36,16 +37,12 @@ var visApp = (function() {
 
     sprite = new THREE.TextureLoader().load( "ball.png" );
 
-    $.getJSON('https://portal.intelliagg.com/sites.json', function(data){
-      console.log('>>>', data);
-    });
-
-    for ( i = 0; i < 25000; i ++ ) {
+    for ( i = 0; i < realData.length; i ++ ) {
 
       var vertex = new THREE.Vector3();
-      vertex.x = 2000 * Math.random() - 1000;
-      vertex.y = 2000 * Math.random() - 1000;
-      vertex.z = 2000 * Math.random() - 1000;
+      vertex.x = realData[i].x;
+      vertex.y = realData[i].y;
+      vertex.z = 2000 * Math.random();
 
       geometry.vertices.push( vertex );
 
@@ -56,11 +53,17 @@ var visApp = (function() {
 
     geometry.colors = colors;
 
-    material = new THREE.PointsMaterial( { size: 80, map: sprite, vertexColors: THREE.VertexColors, alphaTest: 0.5, transparent: true } );
+    material = new THREE.PointsMaterial( { size:5, map: sprite, vertexColors: THREE.VertexColors, alphaTest: 0.5, transparent: true } );
     material.color.setHSL( 1.0, 0.2, 0.7 );
 
     particles = new THREE.Points( geometry, material );
     scene.add( particles );
+
+    var lineMaterial = new THREE.LineBasicMaterial();
+    lineMaterial.color = '#000';
+    lineMaterial.linewidth = 2;
+    var mesh = new THREE.Line(geometry, lineMaterial);
+    scene.add(mesh);
 
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio( window.devicePixelRatio );
@@ -143,15 +146,16 @@ var visApp = (function() {
     // camera.position.x += ( mouseX - camera.position.x ) * 0.05;
     // camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
 
-    camera.lookAt( scene.position );
+    //camera.lookAt( scene.position );
 
-    h = ( 360 * ( 1.0 + time ) % 360 ) / 360;
+    //h = ( 360 * ( 1.0 + time ) % 360 ) / 360;
     //material.color.setHSL( h, 1.0, 0.6 );
 
     renderer.render( scene, camera );
     //controls.update();
 
   }
+  });//end getJson function
 })();
 
 module.exports = visApp;
