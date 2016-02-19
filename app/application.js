@@ -41,7 +41,7 @@ var visApp = (function() {
 
           var intersects = raycaster.intersectObjects(scene.children);
 
-          //if there are any objects that have been hit by ray then intersect will contain it
+          //if there are any objects that have been hit by ray then intersect will contain that object
           if(intersects.length > 0) {
 
             //log the object to console
