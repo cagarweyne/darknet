@@ -52058,159 +52058,62 @@ var $ = require('jquery');
 var getCoordinates = require('./libs/getCoordinates');
 
 var visApp = function () {
-  $.getJSON('https://portal.intelliagg.com/sites.json', function (data) {
-    var container;
-    var camera,
-        scene,
-        renderer,
-        particles,
-        geometry,
-        material,
-        i,
-        h,
-        color,
-        colors = [],
-        sprite,
-        size;
-    var mouseX = 0,
-        mouseY = 0;
+    $.getJSON('https://portal.intelliagg.com/sites.json', function (data) {
+        console.log(data);
+        // once everything is loaded, we run our Three.js stuff.
+        init();
 
-    var windowHalfX = window.innerWidth / 2;
-    var windowHalfY = window.innerHeight / 2;
+        function init() {
 
-    init();
-    animate();
+            // create a scene, that will hold all our elements such as objects, cameras and lights.
+            var scene = new THREE.Scene();
 
-    function init() {
-      var realData;
-      realData = getCoordinates(data);
-      console.log(realData);
+            // create a camera, which defines where we're looking at.
+            var camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-      container = document.createElement('div');
-      document.body.appendChild(container);
+            // create a render and set the size
+            var canvasRenderer = new THREE.WebGLRenderer();
+            canvasRenderer.setClearColor(new THREE.Color(0x000000, 1.0));
+            canvasRenderer.setSize(window.innerWidth, window.innerHeight);
 
-      camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 10000);
+            camera.position.x = 20;
+            camera.position.y = 0;
+            camera.position.z = 300;
 
-      camera.position.x = 20;
-      camera.position.y = 0;
-      camera.position.z = 1400;
+            // add the output of the renderer to the html element
+            document.getElementById("WebGL-output").appendChild(canvasRenderer.domElement);
 
-      scene = new THREE.Scene();
-      scene.fog = new THREE.FogExp2(0x000000, 0.00009);
+            var controls = new THREE.OrbitControls(camera, canvasRenderer.domElement);
 
-      geometry = new THREE.Geometry();
+            var itemMat = new THREE.SpriteMaterial();
+            var item = new THREE.Sprite(itemMat);
 
-      sprite = new THREE.TextureLoader().load("ball.png");
+            item.position.set(0, 0, 0);
 
-      for (i = 0; i < realData.length; i++) {
+            scene.add(item);
 
-        var vertex = new THREE.Vector3();
+            createSprites();
+            render();
 
-        vertex.x = realData[i].x;
-        vertex.y = realData[i].y;
-        vertex.z = 2000 * Math.random();
+            function createSprites() {
+                var material = new THREE.SpriteMaterial({ color: 0x00ff00 });
+                var coordinates = getCoordinates(data);
 
-        geometry.vertices.push(vertex);
+                for (var x = 0; x < coordinates.length; x++) {
+                    var sprite = new THREE.Sprite(material);
 
-        colors[i] = new THREE.Color(0x00ff00);
-        //colors[ i ].setHSL( ( vertex.x + 1000 ) / 2000, 1, 0.5 );
-      }
+                    sprite.position.set(coordinates[x].x, coordinates[x].y, 0);
+                    scene.add(sprite);
+                }
+            }
 
-      geometry.colors = colors;
-
-      material = new THREE.PointsMaterial({ size: 5, map: sprite, vertexColors: THREE.VertexColors, alphaTest: 0.5, transparent: true });
-      material.color.setHSL(1.0, 0.2, 0.7);
-
-      particles = new THREE.Points(geometry, material);
-      scene.add(particles);
-
-      var lineMaterial = new THREE.LineBasicMaterial();
-      lineMaterial.color = '#000';
-      lineMaterial.linewidth = 2;
-      var mesh = new THREE.Line(geometry, lineMaterial);
-      scene.add(mesh);
-
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setPixelRatio(window.devicePixelRatio);
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setClearColor('#989D9E');
-
-      container.appendChild(renderer.domElement);
-
-      document.addEventListener('mousemove', onDocumentMouseMove, false);
-      document.addEventListener('touchstart', onDocumentTouchStart, false);
-      document.addEventListener('touchmove', onDocumentTouchMove, false);
-
-      window.addEventListener('resize', onWindowResize, false);
-    }
-
-    var controls = new OrbitControls(camera, renderer.domElement);
-
-    function onDocumentMouseMove(event) {
-
-      mouseX = event.clientX - windowHalfX;
-      mouseY = event.clientY - windowHalfY;
-    }
-
-    function onDocumentTouchStart(event) {
-
-      if (event.touches.length === 1) {
-
-        event.preventDefault();
-
-        mouseX = event.touches[0].pageX - windowHalfX;
-        mouseY = event.touches[0].pageY - windowHalfY;
-      }
-    }
-
-    function onDocumentTouchMove(event) {
-
-      if (event.touches.length === 1) {
-
-        event.preventDefault();
-
-        mouseX = event.touches[0].pageX - windowHalfX;
-        mouseY = event.touches[0].pageY - windowHalfY;
-      }
-    }
-
-    function onWindowResize(event) {
-
-      windowHalfX = window.innerWidth / 2;
-      windowHalfY = window.innerHeight / 2;
-
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-
-    //
-
-    function animate() {
-
-      requestAnimationFrame(animate);
-
-      render();
-      //stats.update();
-    }
-
-    function render() {
-
-      var time = Date.now() * 0.00005;
-
-      // camera.position.x += ( mouseX - camera.position.x ) * 0.05;
-      // camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
-
-      //camera.lookAt( scene.position );
-
-      //h = ( 360 * ( 1.0 + time ) % 360 ) / 360;
-      //material.color.setHSL( h, 1.0, 0.6 );
-
-      renderer.render(scene, camera);
-      //controls.update();
-    }
-  }); //end getJson function
+            function render() {
+                requestAnimationFrame(render);
+                canvasRenderer.render(scene, camera);
+                controls.update();
+            }
+        } //end init function
+    }); //end getJson function
 }();
 
 module.exports = visApp;
