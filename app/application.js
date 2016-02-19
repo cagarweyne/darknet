@@ -26,8 +26,37 @@ var visApp = (function() {
         camera.position.y = 0;
         camera.position.z = 300;
 
+        function onDocumentMouseDown(event) {
+          //align the mouse coordinates
+          var vector = new THREE.Vector3(( event.clientX / window.innerWidth ) * 2 - 1, -( event.clientY / window.innerHeight ) * 2 + 1, 0.5);
+
+          //unproject the camera
+          vector = vector.unproject(camera);
+
+          //cast rays against the objects in space
+
+          var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
+
+          //check to see if any of the our object particles have bee hit by the ray
+
+          var intersects = raycaster.intersectObjects(scene.children);
+
+          //if there are any objects that have been hit by ray then intersect will contain it
+          if(intersects.length > 0) {
+
+            //log the object to console
+            console.log(intersects[0]);
+
+            intersects[0].object.material.transparent = true;
+            intersects[0].object.material.opacity = 0.1;
+          }
+        }
+
         // add the output of the renderer to the html element
         document.getElementById("WebGL-output").appendChild(canvasRenderer.domElement);
+
+        //add event listener for mousedown
+        document.addEventListener('mousedown', onDocumentMouseDown, false);
 
         var controls = new OrbitControls(camera, canvasRenderer.domElement);
 
@@ -62,6 +91,7 @@ var visApp = (function() {
                     //console.log(sprite)
                     scene.add(sprite);
             }
+
         }
 
 
