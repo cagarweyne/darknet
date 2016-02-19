@@ -39,11 +39,14 @@ var visApp = (function() {
 
         scene.add(item);
 
+        var sprite = new THREE.TextureLoader().load( "ball.png" );
+        console.log('sprite:', sprite);
+
         createSprites();
         render();
 
         function createSprites() {
-            var material = new THREE.SpriteMaterial({color: 0x00ff00});
+            var material = new THREE.SpriteMaterial({map: sprite, color: 0x00ff00});
             var coordinates = getCoordinates(data);
 
             for (var x = 0; x < coordinates.length; x++) {
