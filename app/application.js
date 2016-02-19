@@ -32,21 +32,13 @@ var visApp = (function() {
 
         var controls = new OrbitControls(camera, canvasRenderer.domElement);
 
-        var itemMat = new THREE.SpriteMaterial();
-        var item = new THREE.Sprite(itemMat);
-
-        item.position.set(0, 0 , 0);
-
-        scene.add(item);
-
-        var sprite = new THREE.TextureLoader().load( "ball.png" );
-        console.log('sprite:', sprite);
+        var map = new THREE.TextureLoader().load( "ball.png" );
 
         createSprites();
         render();
 
         function createSprites() {
-            var material = new THREE.SpriteMaterial({map: sprite, color: 0x00ff00});
+            var material = new THREE.SpriteMaterial({map: map, color: 0x00ff00});
             var coordinates = getCoordinates(data);
 
             for (var x = 0; x < coordinates.length; x++) {
