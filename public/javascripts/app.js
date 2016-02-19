@@ -52083,7 +52083,7 @@ var visApp = function () {
             // add the output of the renderer to the html element
             document.getElementById("WebGL-output").appendChild(canvasRenderer.domElement);
 
-            var controls = new THREE.OrbitControls(camera, canvasRenderer.domElement);
+            var controls = new OrbitControls(camera, canvasRenderer.domElement);
 
             var itemMat = new THREE.SpriteMaterial();
             var item = new THREE.Sprite(itemMat);
