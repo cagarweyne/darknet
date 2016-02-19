@@ -6,7 +6,6 @@ var getCoordinates = require('./libs/getCoordinates');
 
 var visApp = (function() {
   $.getJSON('https://portal.intelliagg.com/sites.json', function(data){
-    console.log(data);
     // once everything is loaded, we run our Three.js stuff.
     init();
 
@@ -38,13 +37,29 @@ var visApp = (function() {
         render();
 
         function createSprites() {
-            var material = new THREE.SpriteMaterial({map: map, color: 0x00ff00});
             var coordinates = getCoordinates(data);
 
+            console.log('color:', '#'+(Math.random()*0xFFFFFF<<0).toString(16));
+
             for (var x = 0; x < coordinates.length; x++) {
+                  var colors = '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
+
+                  //set color for each particle
+                  var material = new THREE.SpriteMaterial({map: map, color: Math.random() * 0x808080 + 0x808080});
+
                     var sprite = new THREE.Sprite(material);
 
-                    sprite.position.set(coordinates[x].x, coordinates[x].y, 0);
+                    //set the position of each particle in space
+                    sprite.position.set(coordinates[x].x, coordinates[x].y, Math.random() * 100);
+
+                    //set size of each particle
+                    sprite.scale.x =  3;
+                    sprite.scale.y =  3;
+
+                    //give object a unique name
+                    sprite.name = "sprite-" + x;
+                    //sprite.material.color = Math.random() * 0x808080;
+                    //console.log(sprite)
                     scene.add(sprite);
             }
         }
