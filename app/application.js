@@ -2,156 +2,107 @@
 var THREE = require('three');
 var OrbitControls = require('three-orbit-controls')(THREE);
 var $ = require('jquery');
+var getCoordinates = require('./libs/getCoordinates');
 
 var visApp = (function() {
+  $.getJSON('https://portal.intelliagg.com/sites.json', function(data){
+    // once everything is loaded, we run our Three.js stuff.
+    init();
 
-  var container;
-  var camera, scene, renderer, particles, geometry, material, i, h, color, colors = [], sprite, size;
-  var mouseX = 0, mouseY = 0;
+    function init() {
 
-  var windowHalfX = window.innerWidth / 2;
-  var windowHalfY = window.innerHeight / 2;
+        // create a scene, that will hold all our elements such as objects, cameras and lights.
+        var scene = new THREE.Scene();
 
-  init();
-  animate();
+        // create a camera, which defines where we're looking at.
+        var camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-  function init() {
+        // create a render and set the size
+        var canvasRenderer = new THREE.WebGLRenderer();
+        canvasRenderer.setClearColor(new THREE.Color(0x000000, 1.0));
+        canvasRenderer.setSize(window.innerWidth, window.innerHeight);
 
-    container = document.createElement( 'div' );
-    document.body.appendChild( container );
+        camera.position.x = 20;
+        camera.position.y = 0;
+        camera.position.z = 300;
 
-    camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
-    // camera.position.x = 20;
-    // camera.position.y = 0;
-    // camera.position.z = 1000;
+        function onDocumentMouseDown(event) {
+          //align the mouse coordinates
+          var vector = new THREE.Vector3(( event.clientX / window.innerWidth ) * 2 - 1, -( event.clientY / window.innerHeight ) * 2 + 1, 0.5);
 
-    camera.position.x = 20;
-    camera.position.y = 0;
-    camera.position.z = 1400;
+          //unproject the camera
+          vector = vector.unproject(camera);
 
-    scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2( 0x000000, 0.00009 );
+          //cast rays against the objects in space
 
-    geometry = new THREE.Geometry();
+          var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
 
-    sprite = new THREE.TextureLoader().load( "ball.png" );
+          //check to see if any of the our object particles have bee hit by the ray
 
-    $.getJSON('https://portal.intelliagg.com/sites.json', function(data){
-      console.log('>>>', data);
-    });
+          var intersects = raycaster.intersectObjects(scene.children);
 
-    for ( i = 0; i < 25000; i ++ ) {
+          //if there are any objects that have been hit by ray then intersect will contain that object
+          if(intersects.length > 0) {
 
-      var vertex = new THREE.Vector3();
-      vertex.x = 2000 * Math.random() - 1000;
-      vertex.y = 2000 * Math.random() - 1000;
-      vertex.z = 2000 * Math.random() - 1000;
+            //log the object to console
+            console.log(intersects[0]);
 
-      geometry.vertices.push( vertex );
+            intersects[0].object.material.transparent = true;
+            intersects[0].object.material.opacity = 0.1;
+          }
+        }
 
-      colors[ i ] = new THREE.Color( 0x00ff00 );
-      //colors[ i ].setHSL( ( vertex.x + 1000 ) / 2000, 1, 0.5 );
+        // add the output of the renderer to the html element
+        document.getElementById("WebGL-output").appendChild(canvasRenderer.domElement);
 
-    }
+        //add event listener for mousedown
+        document.addEventListener('mousedown', onDocumentMouseDown, false);
 
-    geometry.colors = colors;
+        var controls = new OrbitControls(camera, canvasRenderer.domElement);
 
-    material = new THREE.PointsMaterial( { size: 80, map: sprite, vertexColors: THREE.VertexColors, alphaTest: 0.5, transparent: true } );
-    material.color.setHSL( 1.0, 0.2, 0.7 );
+        var map = new THREE.TextureLoader().load( "ball.png" );
 
-    particles = new THREE.Points( geometry, material );
-    scene.add( particles );
+        createSprites();
+        render();
 
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio( window.devicePixelRatio );
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    renderer.setClearColor('#989D9E');
+        function createSprites() {
+            var coordinates = getCoordinates(data);
 
-    container.appendChild( renderer.domElement );
+            console.log('color:', '#'+(Math.random()*0xFFFFFF<<0).toString(16));
 
-    document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-    document.addEventListener( 'touchstart', onDocumentTouchStart, false );
-    document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+            for (var x = 0; x < coordinates.length; x++) {
+                  var colors = '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
 
-    window.addEventListener( 'resize', onWindowResize, false );
+                  //set color for each particle
+                  var material = new THREE.SpriteMaterial({map: map, color: Math.random() * 0x808080 + 0x808080});
 
-  }
+                    var sprite = new THREE.Sprite(material);
 
-  var controls = new OrbitControls(camera, renderer.domElement);
+                    //set the position of each particle in space
+                    sprite.position.set(coordinates[x].x, coordinates[x].y, Math.random() * 100);
+
+                    //set size of each particle
+                    sprite.scale.x =  3;
+                    sprite.scale.y =  3;
+
+                    //give object a unique name
+                    sprite.name = "sprite-" + x;
+                    //sprite.material.color = Math.random() * 0x808080;
+                    //console.log(sprite)
+                    scene.add(sprite);
+            }
+
+        }
 
 
-  function onDocumentMouseMove( event ) {
+        function render() {
+            requestAnimationFrame(render);
+            canvasRenderer.render(scene, camera);
+            controls.update();
+        }
 
-    mouseX = event.clientX - windowHalfX;
-    mouseY = event.clientY - windowHalfY;
-
-  }
-
-  function onDocumentTouchStart( event ) {
-
-    if ( event.touches.length === 1 ) {
-
-      event.preventDefault();
-
-      mouseX = event.touches[ 0 ].pageX - windowHalfX;
-      mouseY = event.touches[ 0 ].pageY - windowHalfY;
-
-    }
-
-  }
-
-  function onDocumentTouchMove( event ) {
-
-    if ( event.touches.length === 1 ) {
-
-      event.preventDefault();
-
-      mouseX = event.touches[ 0 ].pageX - windowHalfX;
-      mouseY = event.touches[ 0 ].pageY - windowHalfY;
-
-    }
-
-  }
-
-  function onWindowResize( event ) {
-
-    windowHalfX = window.innerWidth / 2;
-    windowHalfY = window.innerHeight / 2;
-
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-
-    renderer.setSize( window.innerWidth, window.innerHeight );
-
-  }
-
-  //
-
-  function animate() {
-
-    requestAnimationFrame( animate );
-
-    render();
-    //stats.update();
-
-  }
-
-  function render() {
-
-    var time = Date.now() * 0.00005;
-
-    // camera.position.x += ( mouseX - camera.position.x ) * 0.05;
-    // camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
-
-    camera.lookAt( scene.position );
-
-    h = ( 360 * ( 1.0 + time ) % 360 ) / 360;
-    //material.color.setHSL( h, 1.0, 0.6 );
-
-    renderer.render( scene, camera );
-    //controls.update();
-
-  }
+    }//end init function
+  });//end getJson function
 })();
 
 module.exports = visApp;
