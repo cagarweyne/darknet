@@ -15,8 +15,10 @@ module.exports = function (arr) {
     if(site.linksFrom){
       siteData["url"] = stripped[0];
       siteData["linksFrom"] = site.linksFrom;
+      siteData["fullUrl"] = site.site;
     } else {
       siteData["url"] = stripped[0];
+      siteData["fullUrl"] = site.site;
     }
 
     sites.push(siteData);
@@ -43,7 +45,7 @@ module.exports = function (arr) {
           partTwoTotal += part2.charCodeAt(j) / 8;
         }
 
-        var coordObj = coord[index] = { x: (partOneTotal * 4) - 350 , y: (partTwoTotal * 4) - 350, linksFrom: obj.linksFrom, url: obj.url  };
+        var coordObj = coord[index] = { x: (partOneTotal * 4) - 350 , y: (partTwoTotal * 4) - 350, linksFrom: obj.linksFrom, url: obj.fullUrl  };
 
         particleList.push(coordObj);
       }

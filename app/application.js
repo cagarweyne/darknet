@@ -13,23 +13,23 @@ var visApp = (function() {
     var finalCoordArr = coordinates.reduce(function(acc, obj, i,  arr){
       //loop through the linksFrom array if not empty
       if(obj.linksFrom !==undefined){
-        for(var j=0; j <obj.linksFrom.length; j++){
+        //console.log('arr[i].fullUrl', arr[i].fullUrl);
 
-          if(arr.indexOf(obj.linksFrom[j]) >=0); {
-            // console.log(arr[j].url);
-            //take the x and y coords from it
-            if(!obj["coordLinks"]) {
-              obj["coordLinks"] = [].concat({x: arr[j].x, y: arr[j].y});
+        for (var j = 0;j <arr.length; j++ ) {
+          if(obj.linksFrom.indexOf(arr[j].url) >= 0){
+            console.log('inside statement block');
+            if(!obj["coordLinks"]){
+              obj["coordLinks"] = [].concat({ x: arr[j].x, y: arr[j].y });
             } else {
-              obj["coordLinks"].concat({x: arr[j].x, y: arr[j].y});
+              obj.coordLinks.concat({ x: arr[j].x, y: arr[j].y });
             }
-
           }
         }
+
       }
     }, reducedCoords);
 
-    console.log(coordinates)
+    //console.log(coordinates);
 
     // once everything is loaded, we run our Three.js stuff.
     init();
