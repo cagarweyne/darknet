@@ -113,17 +113,42 @@
     var global = window;
     
 
-    var __makeRequire = function(r, __brmap) {
+    var __makeRequire = function(r, __brmap, pref) {
+      var none = {};
+      var tryReq = function(name, pref) {
+        var val;
+        try {
+          val = r(pref + '/node_modules/' + name);
+          return val;
+        } catch (e) {
+          if (e.toString().indexOf('Cannot find module') === -1) {
+            throw e;
+          }
+
+          if (pref.indexOf('node_modules') !== -1) {
+            var s = pref.split('/');
+            var i = s.lastIndexOf('node_modules');
+            var newPref = s.slice(0, i).join('/');
+            return tryReq(name, newPref);
+          }
+        }
+        return none;
+      };
       return function(name) {
         if (__brmap[name] !== undefined) name = __brmap[name];
         name = name.replace(".js", "");
+        if (name[0] !== '.' && pref) {
+          var val = tryReq(name, pref);
+          if (val !== none) return val;
+        }
         return r(name);
       }
     };
+  
   require.register('jquery', function(exports,req,module){
-    var require = __makeRequire((function(n) { return req(n.replace('./', 'jquery//dist/')); }), {});
-    (function(exports,require,module) {
-      /*!
+      var require = __makeRequire((function(n) { return req(n.replace('./', 'jquery//dist/')); }), {}, 'jquery');
+      (function(exports,require,module) {
+        /*!
  * jQuery JavaScript Library v2.2.0
  * http://jquery.com/
  *
@@ -9955,12 +9980,12 @@ if ( !noGlobal ) {
 return jQuery;
 }));
 
-    })(exports,require,module);
-  });
+      })(exports,require,module);
+    });
 require.register('three-orbit-controls', function(exports,req,module){
-    var require = __makeRequire((function(n) { return req(n.replace('./', 'three-orbit-controls//')); }), {});
-    (function(exports,require,module) {
-      module.exports = function(THREE) {
+      var require = __makeRequire((function(n) { return req(n.replace('./', 'three-orbit-controls//')); }), {}, 'three-orbit-controls');
+      (function(exports,require,module) {
+        module.exports = function(THREE) {
 	var MOUSE = THREE.MOUSE
 	if (!MOUSE)
 		MOUSE = { LEFT: 0, MIDDLE: 1, RIGHT: 2 };
@@ -11080,12 +11105,12 @@ require.register('three-orbit-controls', function(exports,req,module){
 	return OrbitControls;
 }
 
-    })(exports,require,module);
-  });
+      })(exports,require,module);
+    });
 require.register('three', function(exports,req,module){
-    var require = __makeRequire((function(n) { return req(n.replace('./', 'three//')); }), {});
-    (function(exports,require,module) {
-      var self = self || {};// File:src/Three.js
+      var require = __makeRequire((function(n) { return req(n.replace('./', 'three//')); }), {}, 'three');
+      (function(exports,require,module) {
+        var self = self || {};// File:src/Three.js
 
 /**
  * @author mrdoob / http://mrdoob.com/
@@ -51654,8 +51679,8 @@ if (typeof exports !== 'undefined') {
   this['THREE'] = THREE;
 }
 
-    })(exports,require,module);
-  });
+      })(exports,require,module);
+    });
 })();'use strict';
 
 /* jshint ignore:start */
