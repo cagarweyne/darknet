@@ -3,9 +3,34 @@ var THREE = require('three');
 var OrbitControls = require('three-orbit-controls')(THREE);
 var $ = require('jquery');
 var getCoordinates = require('./libs/getCoordinates');
+//var urlLinks = require('./libs/url-links');
 
 var visApp = (function() {
   $.getJSON('https://portal.intelliagg.com/sites.json', function(data){
+    //compare urlLinks obj with getCoordinates array
+    var coordinates = getCoordinates(data);
+    var reducedCoords = {};
+    var finalCoordArr = coordinates.reduce(function(acc, obj, i,  arr){
+      //loop through the linksFrom array if not empty
+      if(obj.linksFrom !==undefined){
+        for(var j=0; j <obj.linksFrom.length; j++){
+
+          if(arr.indexOf(obj.linksFrom[j]) >=0); {
+            // console.log(arr[j].url);
+            //take the x and y coords from it
+            if(!obj["coordLinks"]) {
+              obj["coordLinks"] = [].concat({x: arr[j].x, y: arr[j].y});
+            } else {
+              obj["coordLinks"].concat({x: arr[j].x, y: arr[j].y});
+            }
+
+          }
+        }
+      }
+    }, reducedCoords);
+
+    console.log(coordinates)
+
     // once everything is loaded, we run our Three.js stuff.
     init();
 
@@ -66,7 +91,7 @@ var visApp = (function() {
         render();
 
         function createSprites() {
-            var coordinates = getCoordinates(data);
+
 
             console.log('color:', '#'+(Math.random()*0xFFFFFF<<0).toString(16));
 

@@ -1,29 +1,32 @@
+var urlLinks = require('./url-links');
+
 module.exports = function (arr) {
 
   var sites = [];
   var coord = {};
-  var urlSites = {};
+  var urlSites = urlLinks(arr);
   var particleList = [];
   var lowest = 500;
   var highest = 0;
 
   arr.forEach(function(site, index){
+    var siteData = {};
     var stripped = site.site.split('.');
-    if(site.linksFrom) {
-      urlSites[index] = { url: site.site, linksFrom: site.linksFrom };
+    if(site.linksFrom){
+      siteData["url"] = stripped[0];
+      siteData["linksFrom"] = site.linksFrom;
+    } else {
+      siteData["url"] = stripped[0];
     }
 
-    sites.push(stripped[0]);
+    sites.push(siteData);
   });
 
-  console.log(Object.keys(urlSites).length);
-  console.log(Object.keys(urlSites)[0]);
-
-  sites.forEach(function(url, index){
-      if(url.length / 2 === 8 ) {
-        var part1 = url.slice(0, 8);
-        var part2 = url.slice(8);
-        //console.log('ascii value:', part2.charCodeAt(1));
+  sites.forEach(function(obj, index){
+      //console.log(obj);
+      if(obj.url.length / 2 === 8 ) {
+        var part1 = obj.url.slice(0, 8);
+        var part2 = obj.url.slice(8);
         var partOneTotal = 0;
         for(var i=0; i <part1.length; i++) {
           partOneTotal += part1.charCodeAt(i) / 8;
@@ -40,19 +43,13 @@ module.exports = function (arr) {
           partTwoTotal += part2.charCodeAt(j) / 8;
         }
 
-        var urlKeys = Object.keys(urlSites); 
-        if(Object.keys(urlSites)[index]){
-          var coordObj = coord[index] = { x: (partOneTotal * 4) - 350 , y: (partTwoTotal * 4) - 350, url: urlSites[urlKeys[index]].url  };
-        } else {
-          var coordObj = coord[index] = { x: (partOneTotal * 4) - 350 , y: (partTwoTotal * 4) - 350  };
-        }
+        var coordObj = coord[index] = { x: (partOneTotal * 4) - 350 , y: (partTwoTotal * 4) - 350, linksFrom: obj.linksFrom, url: obj.url  };
+
         particleList.push(coordObj);
       }
 
   });
-  console.log('lo x:', lowest);
-  console.log('hi x:', highest);
-  console.log(particleList);
 
+  //console.log(particleList);
   return particleList;
 }
