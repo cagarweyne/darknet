@@ -2,13 +2,23 @@ module.exports = function (arr) {
 
   var sites = [];
   var coord = {};
-  arr.forEach(function(site){
+  var urlSites = {};
+  var particleList = [];
+  var lowest = 500;
+  var highest = 0;
+
+  arr.forEach(function(site, index){
     var stripped = site.site.split('.');
+    if(site.linksFrom) {
+      urlSites[index] = { url: site.site, linksFrom: site.linksFrom };
+    }
+
     sites.push(stripped[0]);
   });
-    var particleList = [];
-    var lowest = 500;
-    var highest = 0;
+
+  console.log(Object.keys(urlSites).length);
+  console.log(Object.keys(urlSites)[0]);
+
   sites.forEach(function(url, index){
       if(url.length / 2 === 8 ) {
         var part1 = url.slice(0, 8);
@@ -29,14 +39,20 @@ module.exports = function (arr) {
         for(var j=0; j <part2.length; j++) {
           partTwoTotal += part2.charCodeAt(j) / 8;
         }
-        var coordObj = coord[index] = { x: (partOneTotal * 4) - 350 , y: (partTwoTotal * 4) - 350  };
 
+        var urlKeys = Object.keys(urlSites); 
+        if(Object.keys(urlSites)[index]){
+          var coordObj = coord[index] = { x: (partOneTotal * 4) - 350 , y: (partTwoTotal * 4) - 350, url: urlSites[urlKeys[index]].url  };
+        } else {
+          var coordObj = coord[index] = { x: (partOneTotal * 4) - 350 , y: (partTwoTotal * 4) - 350  };
+        }
         particleList.push(coordObj);
       }
 
   });
   console.log('lo x:', lowest);
   console.log('hi x:', highest);
+  console.log(particleList);
 
   return particleList;
 }
