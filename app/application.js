@@ -3,14 +3,18 @@ var THREE = require('three');
 var OrbitControls = require('three-orbit-controls')(THREE);
 var $ = require('jquery');
 var getCoordinates = require('./libs/getCoordinates');
-//var urlLinks = require('./libs/url-links');
+var average = require('./libs/average');
 
 var visApp = (function() {
   $.getJSON('https://portal.intelliagg.com/sites.json', function(data){
     //compare urlLinks obj with getCoordinates array
-    var coordinates = getCoordinates(data);
+    //var coordinates = getCoordinates(data);
+
+    average(data);
+
+
     var reducedCoords = {};
-    var finalCoordArr = coordinates.reduce(function(acc, obj, i,  arr){
+    var finalCoordArr = data.reduce(function(acc, obj, i,  arr){
       //loop through the linksFrom array if not empty
       if(obj.linksFrom !==undefined){
         obj.coordLinks = [];
@@ -18,7 +22,7 @@ var visApp = (function() {
           if(obj.linksFrom.indexOf(arr[j].url) >= 0){
             //if url matches any of the links from urls then grab that url
             //collect the objects and push them into an array
-            obj.coordLinks.push({x: arr[j].x, y: arr[j].y, z: arr[j].success });
+            obj.coordLinks.push({x: arr[j].pos.x, y: arr[j].pos.y, z: arr[j].success });
           }
         }
 
@@ -93,8 +97,8 @@ var visApp = (function() {
         var org = new THREE.Sprite(oregoMat);
 
         org.position.set(0,0,0);
-        org.scale.x =  6;
-        org.scale.y =  6;
+        org.scale.x =  16;
+        org.scale.y =  16;
 
         scene.add(org);
 
@@ -103,7 +107,7 @@ var visApp = (function() {
 
             console.log('color:', '#'+(Math.random()*0xFFFFFF<<0).toString(16));
 
-            for (var x = 0; x < coordinates.length; x++) {
+            for (var x = 0; x < data.length; x++) {
                   var colors = '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
 
                   //set color for each particle
@@ -115,35 +119,35 @@ var visApp = (function() {
                     var sprite = new THREE.Sprite(material);
 
                     //set the position of each particle in space
-                    sprite.position.set(coordinates[x].x, coordinates[x].y, coordinates[x].success);
+                    sprite.position.set(data[x].pos.x , data[x].pos.y, data[x].pos.z);
 
-                    //loop over the coordLinks array and get coordinates for each line
-                    //if coordinates[x].coordLinks.length is not Undefined
-                    if(coordinates[x].coordLinks){
-                      for(var k = 0; k<coordinates[x].coordLinks.length; k++){
+                    //loop over the coordLinks array and get data for each line
+                    //if data[x].coordLinks.length is not Undefined
+                    if(data[x].coordLinks){
+                      for(var k = 0; k<data[x].coordLinks.length; k++){
                         geometry.vertices.push(
                           new THREE.Vector3(
-                          coordinates[x].x,
-                          coordinates[x].y,
-                          coordinates[x].success
+                          data[x].x,
+                          data[x].y,
+                          data[x].success
                         ),
-                        new THREE.Vector3(coordinates[x].coordLinks[k].x,coordinates[x].coordLinks[k].y,coordinates[x].coordLinks[k].success)
+                        new THREE.Vector3(data[x].coordLinks[k].x,data[x].coordLinks[k].y,data[x].coordLinks[k].success)
                       );
                       }
                     }
 
 
                     //set size of each particle
-                    sprite.scale.x =  3;
-                    sprite.scale.y =  3;
+                    sprite.scale.x =  10;
+                    sprite.scale.y =  10;
 
                     //give object a unique name
                     sprite.name = "sprite-" + x;
                     //sprite.material.color = Math.random() * 0x808080;
 
                     scene.add(sprite);
-                    var line = new THREE.Line(geometry, lineColor);
-                    scene.add(line);
+                    // line = new THREE.Line(geometry, lineColor);
+                    //scene.add(line);
 
 
 
@@ -153,12 +157,15 @@ var visApp = (function() {
 
 
         function render() {
-            //camera.lookAt(56, 52, 20);
+            camera.lookAt(scene.position);
+            // if (camera.position )
+            //console.log(camera.position);
             requestAnimationFrame(render);
             canvasRenderer.render(scene, camera);
             controls.update();
-        }
 
+        }
+        console.log(scene.children);
     }//end init function
   });//end getJson function
 })();
