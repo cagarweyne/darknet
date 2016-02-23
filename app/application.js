@@ -43,9 +43,11 @@ var visApp = (function() {
         canvasRenderer.setClearColor(new THREE.Color(0x000000, 1.0));
         canvasRenderer.setSize(window.innerWidth, window.innerHeight);
 
-        camera.position.x = 20;
-        camera.position.y = 0;
+        camera.position.x = 80;
+        camera.position.y = 50;
         camera.position.z = 300;
+
+
 
         function onDocumentMouseDown(event) {
           //align the mouse coordinates
@@ -151,6 +153,7 @@ var visApp = (function() {
 
 
         function render() {
+            //camera.lookAt(56, 52, 20);
             requestAnimationFrame(render);
             canvasRenderer.render(scene, camera);
             controls.update();
