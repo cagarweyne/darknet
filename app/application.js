@@ -18,14 +18,14 @@ var visApp = (function() {
           if(obj.linksFrom.indexOf(arr[j].url) >= 0){
             //if url matches any of the links from urls then grab that url
             //collect the objects and push them into an array
-            obj.coordLinks.push({x: arr[j].x, y: arr[j].y});
+            obj.coordLinks.push({x: arr[j].x, y: arr[j].y, z: arr[j].success });
           }
         }
 
       }
     }, reducedCoords);
 
-    console.log(coordinates);
+    //console.log(coordinates);
 
     // once everything is loaded, we run our Three.js stuff.
     init();
@@ -66,7 +66,7 @@ var visApp = (function() {
           if(intersects.length > 0) {
 
             //log the object to console
-            //console.log(intersects[0]);
+            console.log(intersects[0]);
 
             intersects[0].object.material.transparent = true;
             intersects[0].object.material.opacity = 0.1;
@@ -85,6 +85,16 @@ var visApp = (function() {
 
         createSprites();
         render();
+
+        var oregoMat = new THREE.SpriteMaterial({map: map, color: 0xFFFFFF})
+
+        var org = new THREE.Sprite(oregoMat);
+
+        org.position.set(0,0,0);
+        org.scale.x =  6;
+        org.scale.y =  6;
+
+        scene.add(org);
 
         function createSprites() {
 
@@ -109,11 +119,14 @@ var visApp = (function() {
                     //if coordinates[x].coordLinks.length is not Undefined
                     if(coordinates[x].coordLinks){
                       for(var k = 0; k<coordinates[x].coordLinks.length; k++){
-                        geometry.vertices.push(new THREE.Vector3(
-                          coordinates[x].coordLinks[k].x,
-                          coordinates[x].coordLinks[k].y,
+                        geometry.vertices.push(
+                          new THREE.Vector3(
+                          coordinates[x].x,
+                          coordinates[x].y,
                           coordinates[x].success
-                        ));
+                        ),
+                        new THREE.Vector3(coordinates[x].coordLinks[k].x,coordinates[x].coordLinks[k].y,coordinates[x].coordLinks[k].success)
+                      );
                       }
                     }
 

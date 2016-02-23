@@ -6,8 +6,8 @@ module.exports = function (arr) {
   var coord = {};
   var urlSites = urlLinks(arr);
   var particleList = [];
-  var lowest = 500;
-  var highest = 0;
+  var xlowest = 500;
+  var xhighest = 0;
 
   arr.forEach(function(site, index){
     var siteData = {};
@@ -22,7 +22,7 @@ module.exports = function (arr) {
     else {
       siteData["url"] = stripped[0];
       siteData["fullUrl"] = site.site;
-            siteData["success"] = site.success || 0;
+            siteData["success"] = site.success || (Math.random() * 100) + (Math.random() * 50);
     }
 
     sites.push(siteData);
@@ -35,18 +35,18 @@ module.exports = function (arr) {
         var part2 = obj.url.slice(8);
         var partOneTotal = 0;
         for(var i=0; i <part1.length; i++) {
-          partOneTotal += part1.charCodeAt(i) / 8;
+          partOneTotal += part1.charCodeAt(i) / 8 + (Math.random() * 10);
         }
-        if (partOneTotal < lowest){
-          lowest = partOneTotal;
+        if (partOneTotal < xlowest){
+          xlowest = partOneTotal;
         }
-        if (partOneTotal > highest){
-          highest = partOneTotal;
+        if (partOneTotal > xhighest){
+          xhighest = partOneTotal;
         }
 
         var partTwoTotal = 0;
         for(var j=0; j <part2.length; j++) {
-          partTwoTotal += part2.charCodeAt(j) / 8;
+          partTwoTotal += part2.charCodeAt(j) / 8 + (Math.random() * 10);
         }
 
         var coordObj = coord[index] = { x: (partOneTotal * 4) - 350 , y: (partTwoTotal * 4) - 350, linksFrom: obj.linksFrom, url: obj.fullUrl, success: obj.success  };
@@ -56,6 +56,7 @@ module.exports = function (arr) {
 
   });
 
+  console.log('highest: ', xhighest, 'lowest: ', xlowest);
   //console.log(particleList);
   return particleList;
 }
