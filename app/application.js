@@ -25,7 +25,7 @@ var visApp = (function() {
       }
     }, reducedCoords);
 
-    //console.log(coordinates);
+    console.log(coordinates);
 
     // once everything is loaded, we run our Three.js stuff.
     init();
@@ -103,13 +103,17 @@ var visApp = (function() {
                     var sprite = new THREE.Sprite(material);
 
                     //set the position of each particle in space
-                    sprite.position.set(coordinates[x].x, coordinates[x].y, Math.random() * 100);
+                    sprite.position.set(coordinates[x].x, coordinates[x].y, coordinates[x].success);
 
                     //loop over the coordLinks array and get coordinates for each line
                     //if coordinates[x].coordLinks.length is not Undefined
                     if(coordinates[x].coordLinks){
                       for(var k = 0; k<coordinates[x].coordLinks.length; k++){
-                        geometry.vertices.push(new THREE.Vector3(coordinates[x].coordLinks[k].x, coordinates[x].coordLinks[k].y, 0));
+                        geometry.vertices.push(new THREE.Vector3(
+                          coordinates[x].coordLinks[k].x,
+                          coordinates[x].coordLinks[k].y,
+                          coordinates[x].success
+                        ));
                       }
                     }
 

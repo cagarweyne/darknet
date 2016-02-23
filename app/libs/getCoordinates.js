@@ -12,13 +12,17 @@ module.exports = function (arr) {
   arr.forEach(function(site, index){
     var siteData = {};
     var stripped = site.site.split('.');
-    if(site.linksFrom){
+    if(site.linksFrom) {
       siteData["url"] = stripped[0];
       siteData["linksFrom"] = site.linksFrom;
       siteData["fullUrl"] = site.site;
-    } else {
+      siteData["success"] = site.success || 0;
+    }
+
+    else {
       siteData["url"] = stripped[0];
       siteData["fullUrl"] = site.site;
+            siteData["success"] = site.success || 0;
     }
 
     sites.push(siteData);
@@ -45,7 +49,7 @@ module.exports = function (arr) {
           partTwoTotal += part2.charCodeAt(j) / 8;
         }
 
-        var coordObj = coord[index] = { x: (partOneTotal * 4) - 350 , y: (partTwoTotal * 4) - 350, linksFrom: obj.linksFrom, url: obj.fullUrl  };
+        var coordObj = coord[index] = { x: (partOneTotal * 4) - 350 , y: (partTwoTotal * 4) - 350, linksFrom: obj.linksFrom, url: obj.fullUrl, success: obj.success  };
 
         particleList.push(coordObj);
       }
