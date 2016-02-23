@@ -91,7 +91,7 @@ var visApp = (function() {
             //log the object to console
             console.log(intersects[0]);
 
-            intersects[0].object.material.color = '#0CF01F';
+            
             //intersects[0].object.material.transparent = true;
             //intersects[0].object.material.opacity = 0.1;
           }
@@ -164,7 +164,7 @@ var visApp = (function() {
                     //give object a unique name
                     sprite.name = data[x].site;
                     //sprite.material.color = Math.random() * 0x808080;
-                    sprite.linksFrom = "links"; 
+                    sprite.linksFrom = "links";
 
                     scene.add(sprite);
                     // line = new THREE.Line(geometry, lineColor);
