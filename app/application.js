@@ -13,23 +13,19 @@ var visApp = (function() {
     var finalCoordArr = coordinates.reduce(function(acc, obj, i,  arr){
       //loop through the linksFrom array if not empty
       if(obj.linksFrom !==undefined){
-        //console.log('arr[i].fullUrl', arr[i].fullUrl);
-
+        obj.coordLinks = [];
         for (var j = 0;j <arr.length; j++ ) {
           if(obj.linksFrom.indexOf(arr[j].url) >= 0){
-            console.log('inside statement block');
-            if(!obj["coordLinks"]){
-              obj["coordLinks"] = [].concat({ x: arr[j].x, y: arr[j].y });
-            } else {
-              obj.coordLinks.concat({ x: arr[j].x, y: arr[j].y });
-            }
+            //if url matches any of the links from urls then grab that url
+            //collect the objects and push them into an array
+            obj.coordLinks.push({x: arr[j].x, y: arr[j].y});
           }
         }
 
       }
     }, reducedCoords);
 
-    //console.log(coordinates);
+    console.log(coordinates);
 
     // once everything is loaded, we run our Three.js stuff.
     init();
@@ -70,7 +66,7 @@ var visApp = (function() {
           if(intersects.length > 0) {
 
             //log the object to console
-            console.log(intersects[0]);
+            //console.log(intersects[0]);
 
             intersects[0].object.material.transparent = true;
             intersects[0].object.material.opacity = 0.1;
