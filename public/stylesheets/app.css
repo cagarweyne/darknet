@@ -1,0 +1,48 @@
+/* line 4, /Users/abdi/Documents/intelliagg/tasks/visualization/darknet-vis/app/styles/main.scss */
+body {
+  background-color: #000000;
+  margin: 0 !important;
+  overflow: hidden;
+  font-family: sans-serif;
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center; }
+
+/* line 14, /Users/abdi/Documents/intelliagg/tasks/visualization/darknet-vis/app/styles/main.scss */
+a {
+  color: #0078ff; }
+
+/* line 18, /Users/abdi/Documents/intelliagg/tasks/visualization/darknet-vis/app/styles/main.scss */
+#info {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  padding: 5px;
+  z-index: 100;
+  color: #fff; }
+
+/* line 28, /Users/abdi/Documents/intelliagg/tasks/visualization/darknet-vis/app/styles/main.scss */
+.node-info, .more-details {
+  position: absolute;
+  top: 520px;
+  left: 20px;
+  max-width: 250px;
+  z-index: 101;
+  color: #fff;
+  font-size: 1.2em;
+  border-top: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  padding: 5px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0, rgba(0, 0, 0, 0.3) 100%);
+  font-weight: normal; }
+
+/* line 43, /Users/abdi/Documents/intelliagg/tasks/visualization/darknet-vis/app/styles/main.scss */
+#more-details {
+  position: absolute;
+  top: 580px;
+  left: 20px;
+  border: none; }
+
+
+/*# sourceMappingURL=app.css.map*/

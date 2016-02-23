@@ -36,11 +36,14 @@ var visApp = (function() {
 
     function init() {
 
+      var container = document.createElement('div');
+      document.body.appendChild(container);
+
         // create a scene, that will hold all our elements such as objects, cameras and lights.
         var scene = new THREE.Scene();
 
         // create a camera, which defines where we're looking at.
-        var camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 1000);
+        var camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 1000000);
 
         // create a render and set the size
         var canvasRenderer = new THREE.WebGLRenderer();
@@ -53,7 +56,16 @@ var visApp = (function() {
 
 
 
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				canvasRenderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
         function onDocumentMouseDown(event) {
+          event.preventDefault();
           //align the mouse coordinates
           var vector = new THREE.Vector3(( event.clientX / window.innerWidth ) * 2 - 1, -( event.clientY / window.innerHeight ) * 2 + 1, 0.5);
 
@@ -70,12 +82,18 @@ var visApp = (function() {
 
           //if there are any objects that have been hit by ray then intersect will contain that object
           if(intersects.length > 0) {
+            var object = intersects[0].object;
+            var heading = document.getElementById('node-info');
+            heading.innerHTML = "Node Details";
+            var text = document.getElementById('more-details');
+            text.innerHTML = object.name;
 
             //log the object to console
             console.log(intersects[0]);
 
-            intersects[0].object.material.transparent = true;
-            intersects[0].object.material.opacity = 0.1;
+            intersects[0].object.material.color = '#0CF01F';
+            //intersects[0].object.material.transparent = true;
+            //intersects[0].object.material.opacity = 0.1;
           }
         }
 
@@ -84,6 +102,7 @@ var visApp = (function() {
 
         //add event listener for mousedown
         document.addEventListener('mousedown', onDocumentMouseDown, false);
+        window.addEventListener( 'resize', onWindowResize, false );
 
         var controls = new OrbitControls(camera, canvasRenderer.domElement);
 
@@ -119,7 +138,8 @@ var visApp = (function() {
                     var sprite = new THREE.Sprite(material);
 
                     //set the position of each particle in space
-                    sprite.position.set(data[x].pos.x , data[x].pos.y, data[x].pos.z);
+                    //sprite.position.set(data[x].pos.x , data[x].pos.y, data[x].pos.z);
+                    sprite.position.set((Math.random() * 800 - 400) * 10 , (Math.random() * 800 - 400) * 10 , (Math.random() * 800 - 400) * 10 );
 
                     //loop over the coordLinks array and get data for each line
                     //if data[x].coordLinks.length is not Undefined
@@ -138,12 +158,13 @@ var visApp = (function() {
 
 
                     //set size of each particle
-                    sprite.scale.x =  10;
-                    sprite.scale.y =  10;
+                    sprite.scale.x =  25;
+                    sprite.scale.y =  25;
 
                     //give object a unique name
-                    sprite.name = "sprite-" + x;
+                    sprite.name = data[x].site;
                     //sprite.material.color = Math.random() * 0x808080;
+                    sprite.linksFrom = "links"; 
 
                     scene.add(sprite);
                     // line = new THREE.Line(geometry, lineColor);
