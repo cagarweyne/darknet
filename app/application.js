@@ -25,7 +25,7 @@ var visApp = (function() {
       }
     }, reducedCoords);
 
-    console.log(coordinates);
+    //console.log(coordinates);
 
     // once everything is loaded, we run our Three.js stuff.
     init();
@@ -97,10 +97,22 @@ var visApp = (function() {
                   //set color for each particle
                   var material = new THREE.SpriteMaterial({map: map, color: Math.random() * 0x808080 + 0x808080});
 
+                    var lineColor = new THREE.LineBasicMaterial({ color: 0x0000ff });
+                    var geometry = new THREE.Geometry();
+
                     var sprite = new THREE.Sprite(material);
 
                     //set the position of each particle in space
                     sprite.position.set(coordinates[x].x, coordinates[x].y, Math.random() * 100);
+
+                    //loop over the coordLinks array and get coordinates for each line
+                    //if coordinates[x].coordLinks.length is not Undefined
+                    if(coordinates[x].coordLinks){
+                      for(var k = 0; k<coordinates[x].coordLinks.length; k++){
+                        geometry.vertices.push(new THREE.Vector3(coordinates[x].coordLinks[k].x, coordinates[x].coordLinks[k].y, 0));
+                      }
+                    }
+
 
                     //set size of each particle
                     sprite.scale.x =  3;
@@ -109,8 +121,13 @@ var visApp = (function() {
                     //give object a unique name
                     sprite.name = "sprite-" + x;
                     //sprite.material.color = Math.random() * 0x808080;
-                    //console.log(sprite)
+
                     scene.add(sprite);
+                    var line = new THREE.Line(geometry, lineColor);
+                    scene.add(line);
+
+
+
             }
 
         }
