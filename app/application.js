@@ -145,56 +145,53 @@ var visApp = (function() {
 
         function createSprites() {
 
-
-
-
             for (var x = 0; x < data.length; x++) {
-                  var colors = '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
 
-                  //set color for each particle
-                  var material = new THREE.SpriteMaterial({map: map, color: Math.random() * 0x808080 + 0x808080});
+                //loop over the coordLinks array and decorate each particle to have coordLinks array
+                if(data[x].coordLinks){
+                var withLinksmaterial = new THREE.SpriteMaterial({map: map, color: 0xFF0066, transparent: true, opacity: 0.5 });
+                var sprite = new THREE.Sprite(withLinksmaterial);
 
-                    var lineColor = new THREE.LineBasicMaterial({ color: 0x0000ff, transparent: true, opacity: 0.1 });
-                    var geometry = new THREE.Geometry();
+                //set the position of each particle in space
+                sprite.position.set(data[x].pos.x , data[x].pos.y, data[x].pos.z);
+                //sprite.position.set((Math.random() * 800 - 400) * 10 , (Math.random() * 800 - 400) * 10 , (Math.random() * 800 - 400) * 10 );
 
-                    var sprite = new THREE.Sprite(material);
+                //set size of each particle
+                sprite.scale.x =  4;
+                sprite.scale.y =  4;
 
-                    //set the position of each particle in space
-                    sprite.position.set(data[x].pos.x , data[x].pos.y, data[x].pos.z);
-                    //sprite.position.set((Math.random() * 800 - 400) * 10 , (Math.random() * 800 - 400) * 10 , (Math.random() * 800 - 400) * 10 );
+                //give object a unique name
+                sprite.name = data[x].site;
 
-                    //loop over the coordLinks array and decorate each particle to have coordLinks array
-                    //if data[x].coordLinks.length is not Undefined
-                    if(data[x].coordLinks){
-                      for(var k = 0; k<data[x].coordLinks.length; k++)
-                      {
-                          var lineGeo = new THREE.Geometry()
-                          lineGeo.vertices.push(new THREE.Vector3(data[x].pos.x,data[x].pos.y,data[x].pos.z))
-                          lineGeo.vertices.push(new THREE.Vector3(data[x].coordLinks[k].x,data[x].coordLinks[k].y,data[x].coordLinks[k].z))
-                          var line = new THREE.Line(lineGeo, lineColor);
+                //add the coords of incoming links as prop to be used later - on click
+                sprite.coordLinks = data[x].coordLinks;
 
-                          sprite.coordLinks = data[x].coordLinks;
-                          //scene.add(line);
-                      }
-                    }
+                //add the sprite to scene in space
+                scene.add(sprite);
 
-                    //set size of each particle
-                    sprite.scale.x =  2;
-                    sprite.scale.y =  2;
+                } else {
 
-                    //give object a unique name
-                    sprite.name = data[x].site;
-                    //sprite.material.color = Math.random() * 0x808080;
+                //set white color for each particle with no links
+                var material = new THREE.SpriteMaterial({map: map, color: 0xFFFFFF, transparent: true, opacity: 0.5 });
 
+                var sprite = new THREE.Sprite(material);
+                //set the position of each particle in space
+                sprite.position.set(data[x].pos.x , data[x].pos.y, data[x].pos.z);
 
-                    scene.add(sprite);
+                //set size of each particle - no links smaller
+                sprite.scale.x =  2;
+                sprite.scale.y =  2;
 
+                //give object a unique name
+                sprite.name = data[x].site;
 
+                //add the sprite to scene in space
+                scene.add(sprite);
 
+                }
+            }//end for loop
 
-            }
-
-        }
+        }//end createSprites function
 
 
         function render() {
