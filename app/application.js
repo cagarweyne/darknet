@@ -91,7 +91,7 @@ var visApp = (function() {
             //log the object to console
             console.log(intersects[0]);
 
-            
+
             //intersects[0].object.material.transparent = true;
             //intersects[0].object.material.opacity = 0.1;
           }
@@ -141,7 +141,7 @@ var visApp = (function() {
                     //sprite.position.set(data[x].pos.x , data[x].pos.y, data[x].pos.z);
                     sprite.position.set((Math.random() * 800 - 400) * 10 , (Math.random() * 800 - 400) * 10 , (Math.random() * 800 - 400) * 10 );
 
-                    //loop over the coordLinks array and get data for each line
+                    //loop over the coordLinks array and decorate each particle to have coordLinks array
                     //if data[x].coordLinks.length is not Undefined
                     if(data[x].coordLinks){
                       for(var k = 0; k<data[x].coordLinks.length; k++){
@@ -155,7 +155,6 @@ var visApp = (function() {
                       );
                       }
                     }
-
 
                     //set size of each particle
                     sprite.scale.x =  25;
@@ -186,7 +185,6 @@ var visApp = (function() {
             controls.update();
 
         }
-        console.log(scene.children);
     }//end init function
   });//end getJson function
 })();
