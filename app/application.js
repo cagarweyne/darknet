@@ -8,11 +8,7 @@ var average = require('./libs/average');
 var visApp = (function() {
   $.getJSON('https://portal.intelliagg.com/sites.json', function(data){
     //compare urlLinks obj with getCoordinates array
-    //var coordinates = getCoordinates(data);
-
-    average(data);
-
-
+    
     var reducedCoords = {};
     var finalCoordArr = data.reduce(function(acc, obj, i,  arr){
 
@@ -94,8 +90,8 @@ var visApp = (function() {
             console.log(intersects[0]);
 
 
-            intersects[0].object.material.transparent = true;
-            intersects[0].object.material.opacity = 0.6;
+            intersects[0].object.material.transparent = false;
+            intersects[0].object.material.opacity = 1;
           }
         }
 
@@ -136,7 +132,7 @@ var visApp = (function() {
                   //set color for each particle
                   var material = new THREE.SpriteMaterial({map: map, color: Math.random() * 0x808080 + 0x808080});
 
-                    var lineColor = new THREE.LineBasicMaterial({ color: 0x0000ff, transparent: true, opacity: 0.3 });
+                    var lineColor = new THREE.LineBasicMaterial({ color: 0x0000ff, transparent: true, opacity: 0.1 });
                     var geometry = new THREE.Geometry();
 
                     var sprite = new THREE.Sprite(material);
@@ -186,7 +182,7 @@ var visApp = (function() {
 
         }
     }//end init function
-  });//end getJson function
+  }); //end getJson function
 })();
 
 module.exports = visApp;
