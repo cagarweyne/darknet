@@ -35,7 +35,33 @@ var visApp = (function() {
     init();
 
     function init() {
-      function DrawLines(data, position) {
+
+      // create a scene, that will hold all our elements such as objects, cameras and lights.
+      var scene = new THREE.Scene();
+
+      // create a camera, which defines where we're looking at.
+      var camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 1000000);
+
+      // create a render and set the size
+      var canvasRenderer = new THREE.WebGLRenderer();
+      canvasRenderer.setClearColor(new THREE.Color(0x000000, 1.0));
+      canvasRenderer.setSize(window.innerWidth, window.innerHeight);
+
+      camera.position.x = 80;
+      camera.position.y = 50;
+      camera.position.z = 300;
+
+      var currentSelectedObject = { lines: [], sprites: [] };
+
+      function removeEntity(object){
+        console.log(scene.getObjectByName(object));
+        console.log('about to remove >>>', object);
+        scene.remove(object);
+      }
+
+      function DrawLines(data, position, object) {
+        // console.log('number of links:',data.length);
+        // console.log('expect: Object >>', typeof position);
         for(var k = 0; k<data.length; k++) {
             var lineGeo = new THREE.Geometry();
             var lineColor = new THREE.LineBasicMaterial({ color: 0x0000ff });
@@ -43,29 +69,18 @@ var visApp = (function() {
             lineGeo.vertices.push(new THREE.Vector3(data[k].x, data[k].y, data[k].z));
             var line = new THREE.Line(lineGeo, lineColor);
 
+            //add unique name to each line
+            line.name = Math.random() + 'line';
+            currentSelectedObject.lines.push(line);
+
+
+            //if(data.length === 1) { line.name = "deep"; }
             scene.add(line);
         }
       }
 
-      var container = document.createElement('div');
-      document.body.appendChild(container);
-
-        // create a scene, that will hold all our elements such as objects, cameras and lights.
-        var scene = new THREE.Scene();
-
-        // create a camera, which defines where we're looking at.
-        var camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 1000000);
-
-        // create a render and set the size
-        var canvasRenderer = new THREE.WebGLRenderer();
-        canvasRenderer.setClearColor(new THREE.Color(0x000000, 1.0));
-        canvasRenderer.setSize(window.innerWidth, window.innerHeight);
-
-        camera.position.x = 80;
-        camera.position.y = 50;
-        camera.position.z = 300;
-
-
+        var container = document.createElement('div');
+        document.body.appendChild(container);
 
 			function onWindowResize() {
 
@@ -93,7 +108,45 @@ var visApp = (function() {
 
           //if there are any objects that have been hit by ray then intersect will contain that object
           if(intersects.length > 0) {
+
+            //garbage collection of any selected objects
+            if(currentSelectedObject.sprites.length > 0 && currentSelectedObject.lines.length > 0){
+
+              //if sprite and has coordLinks then remove lines and make opacity default again
+              if(currentSelectedObject.sprites[0].type === "Sprite" && currentSelectedObject.sprites[0].coordLinks) {
+                //default back opacity
+                currentSelectedObject.sprites[0].material.transparent = true;
+                currentSelectedObject.sprites[0].material.opacity = 0.5;
+
+                //reset the sprites array to 0
+                currentSelectedObject.sprites = [];
+
+                //remove lines - loop over the second until end of array
+                for(var l = 0; l<currentSelectedObject.lines.length ; l++) {
+                  console.log('name of objec to be removed:', currentSelectedObject.lines[l]);
+                  removeEntity(currentSelectedObject.lines[l]);
+                }
+
+                //reset the array back to 0 when completed deletion
+                currentSelectedObject.lines = [];
+              }
+
+            }
+
+            //if sprite and no lines then make opacity back to default
+            else if(currentSelectedObject.sprites.length > 0) {
+              currentSelectedObject.sprites[0].material.transparent = true;
+              currentSelectedObject.sprites[0].material.opacity = 0.5;
+
+              //reset sprites array to 0 when completed
+              currentSelectedObject.sprites = [] ;
+            }
+
             var object = intersects[0].object;
+
+            //add the latest selected object to array
+            currentSelectedObject.sprites.push(object);
+
             var heading = document.getElementById('node-info');
             heading.innerHTML = "Node Details";
             var text = document.getElementById('more-details');
@@ -102,15 +155,13 @@ var visApp = (function() {
             //log the object to console
             console.log(intersects[0]);
 
-
-
             intersects[0].object.material.transparent = false;
             intersects[0].object.material.opacity = 1;
 
             //if sprite and also has coordLinks prop the draw lines linking in
             if(object.type === "Sprite" && object.coordLinks) {
-              console.log()
-              DrawLines(object.coordLinks, object.position);
+              DrawLines(object.coordLinks, object.position, object);
+              // if(scene.ObjectByName("deep")) { console.log( 'line with name: deep: ', scene.ObjectByName("abdi") ); }
             }
 
           }
