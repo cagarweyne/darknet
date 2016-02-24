@@ -30,5 +30,5 @@ module.exports = function(data) {
 
   });
 
-  console.log('xlow:', xlow, 'xhigh:', xhigh, 'ylow:', ylow, 'yhigh:', yhigh, 'zlow:', zlow, 'zhigh:', zhigh);
+  //console.log('xlow:', xlow, 'xhigh:', xhigh, 'ylow:', ylow, 'yhigh:', yhigh, 'zlow:', zlow, 'zhigh:', zhigh);
 }
