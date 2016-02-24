@@ -5,10 +5,12 @@ var $ = require('jquery');
 var getCoordinates = require('./libs/getCoordinates');
 var average = require('./libs/average');
 
+//to move out to separate file
+
 var visApp = (function() {
   $.getJSON('https://portal.intelliagg.com/sites.json', function(data){
     //compare urlLinks obj with getCoordinates array
-    
+
     var reducedCoords = {};
     var finalCoordArr = data.reduce(function(acc, obj, i,  arr){
 
@@ -33,6 +35,17 @@ var visApp = (function() {
     init();
 
     function init() {
+      function DrawLines(data, position) {
+        for(var k = 0; k<data.length; k++) {
+            var lineGeo = new THREE.Geometry();
+            var lineColor = new THREE.LineBasicMaterial({ color: 0x0000ff });
+            lineGeo.vertices.push(new THREE.Vector3(position.x, position.y, position.z));
+            lineGeo.vertices.push(new THREE.Vector3(data[k].x, data[k].y, data[k].z));
+            var line = new THREE.Line(lineGeo, lineColor);
+
+            scene.add(line);
+        }
+      }
 
       var container = document.createElement('div');
       document.body.appendChild(container);
@@ -90,9 +103,18 @@ var visApp = (function() {
             console.log(intersects[0]);
 
 
+
             intersects[0].object.material.transparent = false;
             intersects[0].object.material.opacity = 1;
+
+            //if sprite and also has coordLinks prop the draw lines linking in
+            if(object.type === "Sprite" && object.coordLinks) {
+              console.log()
+              DrawLines(object.coordLinks, object.position);
+            }
+
           }
+
         }
 
         // add the output of the renderer to the html element
@@ -151,7 +173,8 @@ var visApp = (function() {
                           lineGeo.vertices.push(new THREE.Vector3(data[x].coordLinks[k].x,data[x].coordLinks[k].y,data[x].coordLinks[k].z))
                           var line = new THREE.Line(lineGeo, lineColor);
 
-                          scene.add(line);
+                          sprite.coordLinks = data[x].coordLinks;
+                          //scene.add(line);
                       }
                     }
 
