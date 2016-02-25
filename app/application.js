@@ -159,6 +159,20 @@ var visApp = (function() {
             var siteUrl = document.getElementById('site');
             siteUrl.innerHTML = object.name;
 
+            var nodeTitle = document.getElementById('title');
+            if(object.nodeTitle !==undefined) {
+              nodeTitle.innerHTML = object.nodeTitle
+            } else {
+              nodeTitle.innerHTML = 'none';
+            }
+
+            var nodeLang = document.getElementById('lang');
+            if(object.nodeLang !==undefined) {
+              nodeLang.innerHTML = object.nodeLang;
+            } else {
+              nodeLang.innerHTML = 'none';
+            }
+
             var incomingLinks = document.getElementById('incoming-links');
             if(object.coordLinks) {
               incomingLinks.innerHTML = object.coordLinks.length;
@@ -249,6 +263,19 @@ var visApp = (function() {
 
         scene.add(org);
 
+        function addMetaInfo(site, sprite) {
+          //add the title to sprite if available
+          if(site.title) {
+            console.log('title:', site.title);
+            sprite.nodeTitle = site.title;
+          }
+
+          //add the lang if available
+          if(site.language) {
+            sprite.nodeLang = site.language;
+          }
+        }
+
         function createSprites() {
 
             for (var x = 0; x < data.length; x++) {
@@ -272,6 +299,9 @@ var visApp = (function() {
                 //add the coords of incoming links as prop to be used later - on click
                 sprite.coordLinks = data[x].coordLinks;
 
+                //call addMetaInfo function to decorate sprite with more data
+                addMetaInfo(data[x], sprite);
+
                 //add the sprite to scene in space
                 scene.add(sprite);
 
@@ -290,6 +320,9 @@ var visApp = (function() {
 
                 //give object a unique name
                 sprite.name = data[x].site;
+
+                //call addMetaInfo function to decorate sprite with more data
+                addMetaInfo(data[x], sprite);
 
                 //add the sprite to scene in space
                 scene.add(sprite);
