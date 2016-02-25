@@ -3,46 +3,30 @@ $default-text: black;
 
 body {
   background-color: #000000;
-  margin: 0 !important;
+  margin: 0;
   overflow: hidden;
-  font-family:sans-serif;;
-  font-size:13px;
+  font-family: sans-serif;;
+  font-size: 1em;
   font-weight: bold;
   text-align:center;
 }
 
-a {
-  color:#0078ff;
-}
+/**/
 
-#info {
+.node-detail-container {
   position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  padding: 5px;
-  z-index:100;
-  color:#fff;
-}
-
-.node-info, .more-details {
-  position: absolute;
-  top: 520px;
+  top: 800px;
   left: 20px;
-  max-width: 250px;
-  z-index: 101;
   color: #fff;
-  font-size: 1.2em;
-  border-top: 2px solid #fff;
-  border-bottom: 2px solid #fff;
-  padding: 5px;
+  text-align: left;
+  width: 300px;
   background: linear-gradient(to bottom,rgba(0,0,0,.7) 0,rgba(0,0,0,.3) 100%);
-  font-weight: normal;
+  z-index: 100;
 }
 
-#more-details {
-  position: absolute;
-  top: 580px;
-  left: 20px;
-  border: none;
+.header {
+  border-top: solid 2px #fff;
+  border-bottom: solid 2px #fff;
+  padding: 10px;
+  text-align: center;
 }

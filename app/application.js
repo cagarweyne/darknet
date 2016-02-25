@@ -54,8 +54,6 @@ var visApp = (function() {
       var currentSelectedObject = { lines: [], sprites: [], labels: [] };
 
       function removeEntity(object){
-        console.log(scene.getObjectByName(object));
-        console.log('about to remove >>>', object);
         scene.remove(object);
       }
 
@@ -129,7 +127,6 @@ var visApp = (function() {
 
                 //remove lines - loop over until end of array
                 for(var l = 0; l<currentSelectedObject.lines.length ; l++) {
-                  console.log('name of objec to be removed:', currentSelectedObject.lines[l]);
                   removeEntity(currentSelectedObject.lines[l]);
                 }
 
@@ -159,13 +156,19 @@ var visApp = (function() {
             //add the latest selected object to array
             currentSelectedObject.sprites.push(object);
 
-            var heading = document.getElementById('node-info');
-            heading.innerHTML = "Node Details";
-            var text = document.getElementById('more-details');
-            text.innerHTML = object.name;
+            var siteUrl = document.getElementById('site');
+            siteUrl.innerHTML = object.name;
+
+            var incomingLinks = document.getElementById('incoming-links');
+            if(object.coordLinks) {
+              incomingLinks.innerHTML = object.coordLinks.length;
+            } else {
+              incomingLinks.innerHTML = 0;
+            }
+
 
             //log the object to console
-            console.log(intersects[0]);
+            console.log('-----', intersects[0]);
 
             intersects[0].object.material.transparent = false;
             intersects[0].object.material.opacity = 1;
@@ -191,7 +194,7 @@ var visApp = (function() {
 
           	var sprite1 = new THREE.Sprite( labelMaterial );
           	sprite1.scale.set(10,10,1.0);
-          	sprite1.position.set( object.position.x, object.position.y, object.position.z );
+          	sprite1.position.set( object.position.x - 1, object.position.y, object.position.z );
 
             //add the label to the labels array in currentSelectedObject obj
             currentSelectedObject.labels.push(sprite1);
