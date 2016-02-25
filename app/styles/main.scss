@@ -14,14 +14,14 @@ body {
 /**/
 
 .node-detail-container {
-  position: absolute;
+  position: fixed;
   top: 800px;
   left: 20px;
   color: #fff;
   text-align: left;
   width: 300px;
   background: linear-gradient(to bottom,rgba(0,0,0,.7) 0,rgba(0,0,0,.3) 100%);
-  z-index: 100;
+  z-index: 9999 !important;
 }
 
 .header {
@@ -29,4 +29,13 @@ body {
   border-bottom: solid 2px #fff;
   padding: 10px;
   text-align: center;
+}
+
+a {
+  color: #fff;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #fff;
 }

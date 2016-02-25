@@ -88,7 +88,60 @@ var visApp = (function() {
 				canvasRenderer.setSize( window.innerWidth, window.innerHeight );
 
 			}
+
+
         function onDocumentMouseDown(event) {
+          event.preventDefault();
+          //align the mouse coordinates
+          var vector = new THREE.Vector3(( event.clientX / window.innerWidth ) * 2 - 1, -( event.clientY / window.innerHeight ) * 2 + 1, 0.5);
+
+          //unproject the camera
+          vector = vector.unproject(camera);
+
+          //cast rays against the objects in space
+
+          var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
+
+          //check to see if any of the our object particles have bee hit by the ray
+
+          var intersects = raycaster.intersectObjects(scene.children);
+
+          if(intersects.length > 0) {
+
+            intersects[0].object.material.transparent = false;
+            intersects[0].object.material.opacity = 1;
+
+            var object = intersects[0].object;
+
+            var siteUrl = document.getElementById('site');
+            siteUrl.innerHTML = object.name;
+
+            var nodeTitle = document.getElementById('title');
+            if(object.nodeTitle !==undefined) {
+              nodeTitle.innerHTML = object.nodeTitle
+            } else {
+              nodeTitle.innerHTML = 'none';
+            }
+
+            var nodeLang = document.getElementById('lang');
+            if(object.nodeLang !==undefined) {
+              nodeLang.innerHTML = object.nodeLang;
+            } else {
+              nodeLang.innerHTML = 'none';
+            }
+
+            var incomingLinks = document.getElementById('incoming-links');
+            if(object.coordLinks) {
+              incomingLinks.innerHTML = object.coordLinks.length;
+            } else {
+              incomingLinks.innerHTML = 0;
+            }
+
+          }
+
+        }
+
+        function onDocumentMouseMove(event) {
           event.preventDefault();
           //align the mouse coordinates
           var vector = new THREE.Vector3(( event.clientX / window.innerWidth ) * 2 - 1, -( event.clientY / window.innerHeight ) * 2 + 1, 0.5);
@@ -156,31 +209,6 @@ var visApp = (function() {
             //add the latest selected object to array
             currentSelectedObject.sprites.push(object);
 
-            var siteUrl = document.getElementById('site');
-            siteUrl.innerHTML = object.name;
-
-            var nodeTitle = document.getElementById('title');
-            if(object.nodeTitle !==undefined) {
-              nodeTitle.innerHTML = object.nodeTitle
-            } else {
-              nodeTitle.innerHTML = 'none';
-            }
-
-            var nodeLang = document.getElementById('lang');
-            if(object.nodeLang !==undefined) {
-              nodeLang.innerHTML = object.nodeLang;
-            } else {
-              nodeLang.innerHTML = 'none';
-            }
-
-            var incomingLinks = document.getElementById('incoming-links');
-            if(object.coordLinks) {
-              incomingLinks.innerHTML = object.coordLinks.length;
-            } else {
-              incomingLinks.innerHTML = 0;
-            }
-
-
             //log the object to console
             console.log('-----', intersects[0]);
 
@@ -241,7 +269,8 @@ var visApp = (function() {
         document.getElementById("WebGL-output").appendChild(canvasRenderer.domElement);
 
         //add event listener for mousedown
-        document.addEventListener('mousemove', onDocumentMouseDown, false);
+        document.addEventListener('mousemove', onDocumentMouseMove, false);
+        document.addEventListener('mousedown', onDocumentMouseDown, false);
         window.addEventListener( 'resize', onWindowResize, false );
 
         var controls = new OrbitControls(camera, canvasRenderer.domElement);
