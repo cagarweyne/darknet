@@ -51,7 +51,7 @@ var visApp = (function() {
       camera.position.y = 50;
       camera.position.z = 300;
 
-      var currentSelectedObject = { lines: [], sprites: [] };
+      var currentSelectedObject = { lines: [], sprites: [], labels: [] };
 
       function removeEntity(object){
         console.log(scene.getObjectByName(object));
@@ -112,6 +112,12 @@ var visApp = (function() {
             //garbage collection of any selected objects
             if(currentSelectedObject.sprites.length > 0 && currentSelectedObject.lines.length > 0){
 
+              //remove the label
+              removeEntity(currentSelectedObject.labels[0]);
+
+              //reset the labels array to 0
+              currentSelectedObject.labels = [];
+
               //if sprite and has coordLinks then remove lines and make opacity default again
               if(currentSelectedObject.sprites[0].type === "Sprite" && currentSelectedObject.sprites[0].coordLinks) {
                 //default back opacity
@@ -121,7 +127,7 @@ var visApp = (function() {
                 //reset the sprites array to 0
                 currentSelectedObject.sprites = [];
 
-                //remove lines - loop over the second until end of array
+                //remove lines - loop over until end of array
                 for(var l = 0; l<currentSelectedObject.lines.length ; l++) {
                   console.log('name of objec to be removed:', currentSelectedObject.lines[l]);
                   removeEntity(currentSelectedObject.lines[l]);
@@ -140,6 +146,12 @@ var visApp = (function() {
 
               //reset sprites array to 0 when completed
               currentSelectedObject.sprites = [] ;
+
+              //remove the label
+              removeEntity(currentSelectedObject.labels[0]);
+
+              //reset the labels array to 0
+              currentSelectedObject.labels = [];
             }
 
             var object = intersects[0].object;
@@ -164,6 +176,46 @@ var visApp = (function() {
               // if(scene.ObjectByName("deep")) { console.log( 'line with name: deep: ', scene.ObjectByName("abdi") ); }
             }
 
+            // create a canvas element
+          	var canvas1 = document.createElement('canvas');
+          	var context1 = canvas1.getContext('2d');
+          	context1.font = "Bold 20px Arial";
+          	context1.fillStyle = "#fff";
+            context1.fillText('No Url', 0, 20);
+
+          	// canvas contents will be used for a texture
+          	var texture1 = new THREE.Texture(canvas1)
+          	texture1.needsUpdate = true;
+
+          	var labelMaterial = new THREE.SpriteMaterial( { map: texture1, useScreenCoordinates: true } );
+
+          	var sprite1 = new THREE.Sprite( labelMaterial );
+          	sprite1.scale.set(10,10,1.0);
+          	sprite1.position.set( object.position.x, object.position.y, object.position.z );
+
+            //add the label to the labels array in currentSelectedObject obj
+            currentSelectedObject.labels.push(sprite1);
+          	scene.add( sprite1 );
+
+            if ( intersects[ 0 ].object.name ){
+              context1.clearRect(0,0,640,480);
+              var message = intersects[ 0 ].object.name;
+              var metrics = context1.measureText(message);
+              var width = metrics.width;
+              context1.fillStyle = "rgba(0,0,0,0.95)"; // black border
+              context1.fillRect( 0,0, width+8,20+8);
+              context1.fillStyle = "rgba(255,255,255,0.95)"; // white filler
+              context1.fillRect( 2,2, width+4,20+4 );
+              context1.fillStyle = "rgba(0,0,0,1)"; // text color
+              context1.fillText( message, 4,20 );
+              texture1.needsUpdate = true;
+            }
+
+            else {
+              context1.clearRect(0,0,300,300);
+              texture1.needsUpdate = true;
+            }
+
           }
 
         }
@@ -172,7 +224,7 @@ var visApp = (function() {
         document.getElementById("WebGL-output").appendChild(canvasRenderer.domElement);
 
         //add event listener for mousedown
-        document.addEventListener('mousedown', onDocumentMouseDown, false);
+        document.addEventListener('mousemove', onDocumentMouseDown, false);
         window.addEventListener( 'resize', onWindowResize, false );
 
         var controls = new OrbitControls(camera, canvasRenderer.domElement);
