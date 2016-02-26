@@ -5,36 +5,49 @@ var $ = require('jquery');
 var getCoordinates = require('./libs/getCoordinates');
 var average = require('./libs/average');
 
-//to move out to separate file
+//get the element from DOM
+var nodeCon = document.getElementById('node-detail-container');
+
+nodeCon.style.zIndex = 100;
 
 var visApp = (function() {
   $.getJSON('https://portal.intelliagg.com/sites.json', function(data){
-    //compare urlLinks obj with getCoordinates array
 
-    var reducedCoords = {};
-    var finalCoordArr = data.reduce(function(acc, obj, i,  arr){
+    init(data);
 
-      //loop through the linksFrom array if not empty
-      if(obj.linksFrom !==undefined){
-        //console.log('obj', obj);
-        obj.coordLinks = [];
-        for (var j = 0;j <arr.length; j++ ) {
-          if(obj.linksFrom.indexOf(arr[j].site) >= 0){
-            //if url matches any of the links from urls then grab that url
-            //collect the objects and push them into an array
-            obj.coordLinks.push({x: arr[j].pos.x, y: arr[j].pos.y, z: arr[j].pos.z });
-          }
-        }
+    //show our div element that will contain the details for each node
+    $('.node-detail-container').show();
+    $('#loader-wrapper').hide();
 
-      }
-    }, reducedCoords);
 
-    //console.log(data);
+
+  }).fail(function(){
+    console.log('error>>>>>');
+  }); //end getJson function
 
     // once everything is loaded, we run our Three.js stuff.
-    init();
 
-    function init() {
+
+    function init(data) {
+
+      //compare urlLinks obj with getCoordinates array
+      var reducedCoords = {};
+      var finalCoordArr = data.reduce(function(acc, obj, i,  arr){
+
+        //loop through the linksFrom array if not empty
+        if(obj.linksFrom !==undefined){
+          //console.log('obj', obj);
+          obj.coordLinks = [];
+          for (var j = 0;j <arr.length; j++ ) {
+            if(obj.linksFrom.indexOf(arr[j].site) >= 0){
+              //if url matches any of the links from urls then grab that url
+              //collect the objects and push them into an array
+              obj.coordLinks.push({x: arr[j].pos.x, y: arr[j].pos.y, z: arr[j].pos.z });
+            }
+          }
+
+        }
+      }, reducedCoords);
 
       // create a scene, that will hold all our elements such as objects, cameras and lights.
       var scene = new THREE.Scene();
@@ -44,6 +57,7 @@ var visApp = (function() {
 
       // create a render and set the size
       var canvasRenderer = new THREE.WebGLRenderer();
+      //set the background color for the 3d spoace
       canvasRenderer.setClearColor(new THREE.Color(0x000000, 1.0));
       canvasRenderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -266,6 +280,8 @@ var visApp = (function() {
         }
 
         // add the output of the renderer to the html element
+
+        canvasRenderer.domElement.style.zIndex = '-1';
         document.getElementById("WebGL-output").appendChild(canvasRenderer.domElement);
 
         //add event listener for mousedown
@@ -274,6 +290,7 @@ var visApp = (function() {
         window.addEventListener( 'resize', onWindowResize, false );
 
         var controls = new OrbitControls(camera, canvasRenderer.domElement);
+        controls.addEventListener('change', canvasRenderer);
 
         var map = new THREE.TextureLoader().load( "ball.png" );
 
@@ -370,7 +387,7 @@ var visApp = (function() {
 
         }
     }//end init function
-  }); //end getJson function
+
 })();
 
 module.exports = visApp;

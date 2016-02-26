@@ -7,7 +7,14 @@
     <link rel="stylesheet" href="stylesheets/app.css">
 	</head>
 	<body>
-    <div class="node-detail-container" id="container">
+		<div id="loader-wrapper">
+			<div class="data-loading">
+				<p>Loading Data...This could take upto 1 minute</p>
+			</div>
+			<div id="loader"></div>
+			<div class="loader-section"></div>
+		</div>
+    <div class="node-detail-container hidden" id="node-detail-container">
       <p id="header" class="header">Hover to see more details</p>
 			<p class="site">Site: <a href="http:///www.intelliagg.com" target="_blank"><span id="site"></span></a></p>
 			<p class="title">Title: <span id="title"></span></p>
