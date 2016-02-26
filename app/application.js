@@ -27,7 +27,7 @@ var visApp = (function() {
 
 
     }).fail(function(){
-      console.log('error>>>>>');
+
       $('#loadData').trigger("click");
 
     }); //end getJson function
@@ -44,7 +44,6 @@ var visApp = (function() {
 
         //loop through the linksFrom array if not empty
         if(obj.linksFrom !==undefined){
-          //console.log('obj', obj);
           obj.coordLinks = [];
           for (var j = 0;j <arr.length; j++ ) {
             if(obj.linksFrom.indexOf(arr[j].site) >= 0){
@@ -80,8 +79,7 @@ var visApp = (function() {
       }
 
       function DrawLines(data, position, object) {
-        // console.log('number of links:',data.length);
-        // console.log('expect: Object >>', typeof position);
+
         for(var k = 0; k<data.length; k++) {
             var lineGeo = new THREE.Geometry();
             var lineColor = new THREE.LineBasicMaterial({ color: 0x34DDDD  });
@@ -129,7 +127,7 @@ var visApp = (function() {
           var intersects = raycaster.intersectObjects(scene.children);
 
           if(intersects.length > 0) {
-            console.log('Click>>>>>>>>', intersects[0]);
+
             var URL = 'http://' + intersects[0].object.name;
             window.open(URL, "_blank");
           }
@@ -255,16 +253,12 @@ var visApp = (function() {
             //add the latest selected object to array
             currentSelectedObject.sprites.push(object);
 
-            //log the object to console
-            console.log('-----', intersects[0]);
-
             intersects[0].object.material.transparent = false;
             intersects[0].object.material.opacity = 1;
 
             //if sprite and also has coordLinks prop the draw lines linking in
             if(object.type === "Sprite" && object.coordLinks) {
               DrawLines(object.coordLinks, object.position, object);
-              // if(scene.ObjectByName("deep")) { console.log( 'line with name: deep: ', scene.ObjectByName("abdi") ); }
             }
 
             // create a canvas element
@@ -313,8 +307,9 @@ var visApp = (function() {
 
         // add the output of the renderer to the html element
 
-        canvasRenderer.domElement.style.zIndex = '-1';
-        document.getElementById("WebGL-output").appendChild(canvasRenderer.domElement);
+        var mountEle = document.getElementById("WebGL-output");
+        mountEle.style.zIndex = '-1';
+        mountEle.appendChild(canvasRenderer.domElement);
 
         //add event listener for mousedown
         document.addEventListener('mousemove', onDocumentMouseMove, false);
@@ -345,7 +340,7 @@ var visApp = (function() {
         function addMetaInfo(site, sprite) {
           //add the title to sprite if available
           if(site.title) {
-            console.log('title:', site.title);
+
             sprite.nodeTitle = site.title;
           }
 
@@ -361,7 +356,7 @@ var visApp = (function() {
 
                 //loop over the coordLinks array and decorate each particle to have coordLinks array
                 if(data[x].coordLinks){
-                var withLinksmaterial = new THREE.SpriteMaterial({map: map, color: 0xFF0066, transparent: true, opacity: 0.5 });
+                var withLinksmaterial = new THREE.SpriteMaterial({map: map, color: 0xFFFFFF, transparent: true, opacity: 0.7 });
                 var sprite = new THREE.Sprite(withLinksmaterial);
 
                 //set the position of each particle in space
@@ -387,7 +382,7 @@ var visApp = (function() {
                 } else {
 
                 //set white color for each particle with no links
-                var material = new THREE.SpriteMaterial({map: map, color: 0xFFFFFF, transparent: true, opacity: 0.5 });
+                var material = new THREE.SpriteMaterial({map: map, color: 0x990000, transparent: true, opacity: 0.7 });
 
                 var sprite = new THREE.Sprite(material);
                 //set the position of each particle in space

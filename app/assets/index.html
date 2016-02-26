@@ -7,14 +7,21 @@
     <link rel="stylesheet" href="stylesheets/app.css">
 	</head>
 	<body>
-
+		<div class="logo">
+			<img src="deeplight.png" width="250px"/>
+		</div>
 		<div class="fetch-data">
-			<p>Click the button to re-load the visualization</p>
-			<button id="loadData">Load Visualization</button>
+			<div>
+				<p>Click the button to load the visualization</p>
+				<button id="loadData">Load Visualization</button>
+		</div>
 		</div>
 		<div id="loader-wrapper">
 			<div class="data-loading">
-				<p>Loading Data...this could take upto 1 minute</p>
+				<div class="logo">
+					<img src="deeplight.png" width="250px"/>
+				</div>
+				<p>Loading data this could take upto one minute</p>
 			</div>
 
 			<div id="loader"></div>
@@ -22,7 +29,7 @@
 		</div>
     <div class="node-detail-container hidden" id="node-detail-container">
       <p id="header" class="header">Hover to see more details</p>
-			<p class="site">Site: <a href="http:///www.intelliagg.com" target="_blank"><span id="site"></span></a></p>
+			<p class="site">Site: <span id="site"></span></p>
 			<p class="title">Title: <span id="title"></span></p>
 			<p class="lang"> Lang: <span id="lang"></span></p>
 			<p class="incoming-links">Incoming Links: <span id="incoming-links"></span></p>
