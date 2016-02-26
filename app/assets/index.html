@@ -7,10 +7,33 @@
     <link rel="stylesheet" href="stylesheets/app.css">
 	</head>
 	<body>
-
-		<div id="info">
-			<p>3D visualization of Darknet sites</p>
+		<div class="logo">
+			<img src="deeplight.png" width="250px"/>
 		</div>
+		<div class="fetch-data">
+			<div>
+				<p>Click the button to load the visualization</p>
+				<button id="loadData">Load Visualization</button>
+		</div>
+		</div>
+		<div id="loader-wrapper">
+			<div class="data-loading">
+				<div class="logo">
+					<img src="deeplight.png" width="250px"/>
+				</div>
+				<p>Loading data this could take upto one minute</p>
+			</div>
+
+			<div id="loader"></div>
+			<div class="loader-section"></div>
+		</div>
+    <div class="node-detail-container hidden" id="node-detail-container">
+      <p id="header" class="header">Hover to see more details</p>
+			<p class="site">Site: <span id="site"></span></p>
+			<p class="title">Title: <span id="title"></span></p>
+			<p class="lang"> Lang: <span id="lang"></span></p>
+			<p class="incoming-links">Incoming Links: <span id="incoming-links"></span></p>
+    </div>
     <div id="WebGL-output">
     </div>
     <script src="javascripts/app.js"></script>
