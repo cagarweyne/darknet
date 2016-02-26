@@ -11,19 +11,27 @@ var nodeCon = document.getElementById('node-detail-container');
 nodeCon.style.zIndex = 100;
 
 var visApp = (function() {
-  $.getJSON('https://portal.intelliagg.com/sites.json', function(data){
 
-    init(data);
+  $('#loadData').click(function(){
 
-    //show our div element that will contain the details for each node
-    $('.node-detail-container').show();
-    $('#loader-wrapper').hide();
+      $('#loader-wrapper').show();
+
+    $.getJSON('https://portal.intelliagg.com/sites.json', function(data){
+
+      init(data);
+
+      //show our div element that will contain the details for each node
+      $('.node-detail-container').show();
+      $('#loader-wrapper').hide();
 
 
 
-  }).fail(function(){
-    console.log('error>>>>>');
-  }); //end getJson function
+    }).fail(function(){
+      console.log('error>>>>>');
+      $('#loadData').trigger("click");
+
+    }); //end getJson function
+  })
 
     // once everything is loaded, we run our Three.js stuff.
 
@@ -58,7 +66,7 @@ var visApp = (function() {
       // create a render and set the size
       var canvasRenderer = new THREE.WebGLRenderer();
       //set the background color for the 3d spoace
-      canvasRenderer.setClearColor(new THREE.Color(0x000000, 1.0));
+      canvasRenderer.setClearColor(new THREE.Color(0x1E364B, 1.0));
       canvasRenderer.setSize(window.innerWidth, window.innerHeight);
 
       camera.position.x = 80;
@@ -76,7 +84,7 @@ var visApp = (function() {
         // console.log('expect: Object >>', typeof position);
         for(var k = 0; k<data.length; k++) {
             var lineGeo = new THREE.Geometry();
-            var lineColor = new THREE.LineBasicMaterial({ color: 0x0000ff });
+            var lineColor = new THREE.LineBasicMaterial({ color: 0x34DDDD  });
             lineGeo.vertices.push(new THREE.Vector3(position.x, position.y, position.z));
             lineGeo.vertices.push(new THREE.Vector3(data[k].x, data[k].y, data[k].z));
             var line = new THREE.Line(lineGeo, lineColor);
@@ -103,6 +111,30 @@ var visApp = (function() {
 
 			}
 
+
+        function ondblclick(event) {
+          event.preventDefault();
+          //align the mouse coordinates
+          var vector = new THREE.Vector3(( event.clientX / window.innerWidth ) * 2 - 1, -( event.clientY / window.innerHeight ) * 2 + 1, 0.5);
+
+          //unproject the camera
+          vector = vector.unproject(camera);
+
+          //cast rays against the objects in space
+
+          var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
+
+          //check to see if any of the our object particles have bee hit by the ray
+
+          var intersects = raycaster.intersectObjects(scene.children);
+
+          if(intersects.length > 0) {
+            console.log('Click>>>>>>>>', intersects[0]);
+            var URL = 'http://' + intersects[0].object.name;
+            window.open(URL, "_blank");
+          }
+
+        }
 
         function onDocumentMouseDown(event) {
           event.preventDefault();
@@ -287,6 +319,8 @@ var visApp = (function() {
         //add event listener for mousedown
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('mousedown', onDocumentMouseDown, false);
+        document.addEventListener('dblclick', ondblclick, false);
+
         window.addEventListener( 'resize', onWindowResize, false );
 
         var controls = new OrbitControls(camera, canvasRenderer.domElement);
@@ -297,8 +331,7 @@ var visApp = (function() {
         createSprites();
         render();
 
-        //console.log('lb5vnwyafrlxgmlt.onion', scene.getChildByName("lb5vnwyafrlxgmlt.onion"));
-
+        //needs to be removed
         var oregoMat = new THREE.SpriteMaterial({map: map, color: 0xFFFFFF})
 
         var org = new THREE.Sprite(oregoMat);
