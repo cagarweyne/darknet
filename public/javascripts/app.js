@@ -52058,11 +52058,6 @@ var $ = require('jquery');
 var getCoordinates = require('./libs/getCoordinates');
 var average = require('./libs/average');
 
-//get the element from DOM
-var nodeCon = document.getElementById('node-detail-container');
-
-nodeCon.style.zIndex = 100;
-
 var visApp = function () {
 
   $('#loadData').click(function () {
@@ -52085,23 +52080,28 @@ var visApp = function () {
   // once everything is loaded, we run our Three.js stuff.
 
   function init(data) {
+    console.log('data length', data.length);
+    addLinks(data);
 
-    //compare urlLinks obj with getCoordinates array
-    var reducedCoords = {};
-    var finalCoordArr = data.reduce(function (acc, obj, i, arr) {
+    function addLinks(data) {
+      //decorate each object to have coordLinks array for incoming links
+      data.reduce(function (acc, obj, i, arr) {
 
-      //loop through the linksFrom array if not empty
-      if (obj.linksFrom !== undefined) {
-        obj.coordLinks = [];
-        for (var j = 0; j < arr.length; j++) {
-          if (obj.linksFrom.indexOf(arr[j].site) >= 0) {
-            //if url matches any of the links from urls then grab that url
-            //collect the objects and push them into an array
-            obj.coordLinks.push({ x: arr[j].pos.x, y: arr[j].pos.y, z: arr[j].pos.z });
+        //loop through the linksFrom array if not empty
+        if (obj.linksFrom !== undefined) {
+          obj.coordLinks = [];
+          for (var j = 0; j < arr.length; j++) {
+            if (obj.linksFrom.indexOf(arr[j].site) >= 0) {
+              //if url matches any of the links from urls then grab that url
+              //collect the objects and push them into an array
+              obj.coordLinks.push({ x: arr[j].pos.x, y: arr[j].pos.y, z: arr[j].pos.z });
+            }
           }
         }
-      }
-    }, reducedCoords);
+      }, {});
+
+      return data;
+    }
 
     // create a scene, that will hold all our elements such as objects, cameras and lights.
     var scene = new THREE.Scene();
