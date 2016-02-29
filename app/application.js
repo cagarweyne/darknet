@@ -2,128 +2,223 @@
 var THREE = require('three');
 var OrbitControls = require('three-orbit-controls')(THREE);
 var $ = require('jquery');
-var getCoordinates = require('./libs/getCoordinates');
-//var urlLinks = require('./libs/url-links');
+var addLinks = require('./libs/addlinks');
+var drawLines = require('./libs/drawlines');
+var getObjectInteracted = require('./libs/getobject');
+var createLabel = require('./libs/createlabels');
+var addMetaInfo = require('./libs/addmetadata');
+var createSprites = require('./libs/createsprites');
 
 var visApp = (function() {
-  $.getJSON('https://portal.intelliagg.com/sites.json', function(data){
-    //compare urlLinks obj with getCoordinates array
-    var coordinates = getCoordinates(data);
-    var reducedCoords = {};
-    var finalCoordArr = coordinates.reduce(function(acc, obj, i,  arr){
-      //loop through the linksFrom array if not empty
-      if(obj.linksFrom !==undefined){
-        obj.coordLinks = [];
-        for (var j = 0;j <arr.length; j++ ) {
-          if(obj.linksFrom.indexOf(arr[j].url) >= 0){
-            //if url matches any of the links from urls then grab that url
-            //collect the objects and push them into an array
-            obj.coordLinks.push({x: arr[j].x, y: arr[j].y});
-          }
-        }
 
-      }
-    }, reducedCoords);
+  $('#loadData').click(function(){
 
-    console.log(coordinates);
+      $('#loader-wrapper').show();
+
+    $.getJSON('https://portal.intelliagg.com/sites.json', function(data){
+
+      init(data);
+
+      //show our div element that will contain the details for each node
+      $('.node-detail-container').show();
+      $('#loader-wrapper').hide();
+
+    }).fail(function(){
+
+      $('#loadData').trigger("click");
+
+    }); //end getJson function
+  })
 
     // once everything is loaded, we run our Three.js stuff.
-    init();
+    function init(data) {
 
-    function init() {
+      var controls, map;
 
-        // create a scene, that will hold all our elements such as objects, cameras and lights.
-        var scene = new THREE.Scene();
+      var currentSelectedObject = { lines: [], sprites: [], labels: [] };
+      console.log('data length', data.length);
 
-        // create a camera, which defines where we're looking at.
-        var camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 1000);
+      //run function to add coordLinks array to each particle object
+      addLinks(data);
 
-        // create a render and set the size
-        var canvasRenderer = new THREE.WebGLRenderer();
-        canvasRenderer.setClearColor(new THREE.Color(0x000000, 1.0));
-        canvasRenderer.setSize(window.innerWidth, window.innerHeight);
+      // create a scene, that will hold all our elements such as objects, cameras and lights.
+      var scene = new THREE.Scene();
 
-        camera.position.x = 20;
-        camera.position.y = 0;
-        camera.position.z = 300;
+      // create a camera, which defines where we're looking at.
+      var camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 1000000);
+
+      // create a render and set the size
+      var canvasRenderer = new THREE.WebGLRenderer();
+      //set the background color for the 3d spoace
+      canvasRenderer.setClearColor(new THREE.Color(0x1E364B, 1.0));
+      canvasRenderer.setSize(window.innerWidth, window.innerHeight);
+
+      camera.position.x = 80;
+      camera.position.y = 50;
+      camera.position.z = 300;
+
+      // add the output of the renderer to the html element
+      var mountEle = document.getElementById("WebGL-output");
+      mountEle.style.zIndex = '-1';
+      mountEle.appendChild(canvasRenderer.domElement);
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				canvasRenderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+        function ondblclick(event) {
+
+          var intersects = getObjectInteracted(THREE, event, camera, scene);
+
+          if(intersects.length > 0) {
+
+            var URL = 'http://' + intersects[0].object.name;
+            window.open(URL, "_blank");
+          }
+
+        }
 
         function onDocumentMouseDown(event) {
-          //align the mouse coordinates
-          var vector = new THREE.Vector3(( event.clientX / window.innerWidth ) * 2 - 1, -( event.clientY / window.innerHeight ) * 2 + 1, 0.5);
 
-          //unproject the camera
-          vector = vector.unproject(camera);
+          var intersects = getObjectInteracted(THREE, event, camera, scene);
 
-          //cast rays against the objects in space
+          if(intersects.length > 0) {
 
-          var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
+            intersects[0].object.material.transparent = false;
+            intersects[0].object.material.opacity = 1;
 
-          //check to see if any of the our object particles have bee hit by the ray
+            var object = intersects[0].object;
 
-          var intersects = raycaster.intersectObjects(scene.children);
+            var siteUrl = document.getElementById('site');
+            siteUrl.innerHTML = object.name;
+
+            var nodeTitle = document.getElementById('title');
+            if(object.nodeTitle !==undefined) {
+              nodeTitle.innerHTML = object.nodeTitle
+            } else {
+              nodeTitle.innerHTML = 'none';
+            }
+
+            var nodeLang = document.getElementById('lang');
+            if(object.nodeLang !==undefined) {
+              nodeLang.innerHTML = object.nodeLang;
+            } else {
+              nodeLang.innerHTML = 'none';
+            }
+
+            var incomingLinks = document.getElementById('incoming-links');
+            if(object.coordLinks) {
+              incomingLinks.innerHTML = object.coordLinks.length;
+            } else {
+              incomingLinks.innerHTML = 0;
+            }
+
+          }
+
+        }
+
+        function onDocumentMouseMove(event) {
+
+          var intersects = getObjectInteracted(THREE, event, camera, scene);
 
           //if there are any objects that have been hit by ray then intersect will contain that object
           if(intersects.length > 0) {
 
-            //log the object to console
-            //console.log(intersects[0]);
+            //garbage collection of any selected objects
+            if(currentSelectedObject.sprites.length > 0 && currentSelectedObject.lines.length > 0){
 
-            intersects[0].object.material.transparent = true;
-            intersects[0].object.material.opacity = 0.1;
-          }
-        }
-
-        // add the output of the renderer to the html element
-        document.getElementById("WebGL-output").appendChild(canvasRenderer.domElement);
-
-        //add event listener for mousedown
-        document.addEventListener('mousedown', onDocumentMouseDown, false);
-
-        var controls = new OrbitControls(camera, canvasRenderer.domElement);
-
-        var map = new THREE.TextureLoader().load( "ball.png" );
-
-        createSprites();
-        render();
-
-        function createSprites() {
+              //remove the label
+              scene.remove(currentSelectedObject.labels[0]);
 
 
-            console.log('color:', '#'+(Math.random()*0xFFFFFF<<0).toString(16));
+              //reset the labels array to 0
+              currentSelectedObject.labels = [];
 
-            for (var x = 0; x < coordinates.length; x++) {
-                  var colors = '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
+              //if sprite and has coordLinks then remove lines and make opacity default again
+              if(currentSelectedObject.sprites[0].type === "Sprite" && currentSelectedObject.sprites[0].coordLinks) {
+                //default back opacity
+                currentSelectedObject.sprites[0].material.transparent = true;
+                currentSelectedObject.sprites[0].material.opacity = 0.5;
 
-                  //set color for each particle
-                  var material = new THREE.SpriteMaterial({map: map, color: Math.random() * 0x808080 + 0x808080});
+                //reset the sprites array to 0
+                currentSelectedObject.sprites = [];
 
-                    var sprite = new THREE.Sprite(material);
+                //remove lines - loop over until end of array
+                for(var l = 0; l<currentSelectedObject.lines.length ; l++) {
+                  scene.remove(currentSelectedObject.lines[l]);
+                }
 
-                    //set the position of each particle in space
-                    sprite.position.set(coordinates[x].x, coordinates[x].y, Math.random() * 100);
+                //reset the array back to 0 for lines when completed deletion
+                currentSelectedObject.lines = [];
+              }
 
-                    //set size of each particle
-                    sprite.scale.x =  3;
-                    sprite.scale.y =  3;
+            }
 
-                    //give object a unique name
-                    sprite.name = "sprite-" + x;
-                    //sprite.material.color = Math.random() * 0x808080;
-                    //console.log(sprite)
-                    scene.add(sprite);
+            //if sprite and no lines then make opacity back to default
+            else if(currentSelectedObject.sprites.length > 0) {
+              currentSelectedObject.sprites[0].material.transparent = true;
+              currentSelectedObject.sprites[0].material.opacity = 0.5;
+
+              //reset sprites array to 0 when completed
+              currentSelectedObject.sprites = [] ;
+
+              //remove the label
+              scene.remove(currentSelectedObject.labels[0]);
+
+              //reset the labels array to 0
+              currentSelectedObject.labels = [];
+            }
+
+            var object = intersects[0].object;
+
+            //add the latest selected object to array
+            currentSelectedObject.sprites.push(object);
+
+            object.material.transparent = false;
+            object.material.opacity = 1;
+
+            //if sprite and also has coordLinks prop then draw lines linking in
+            if(object.type === "Sprite" && object.coordLinks) {
+              drawLines(object.coordLinks, object.position, object, scene, THREE, currentSelectedObject);
+            }
+
+            createLabel(THREE, intersects, currentSelectedObject, scene);
+
             }
 
         }
 
+        //add event listener for events
+        document.addEventListener('mousemove', onDocumentMouseMove, false);
+        document.addEventListener('mousedown', onDocumentMouseDown, false);
+        document.addEventListener('dblclick', ondblclick, false);
+
+        //add event listener when window is resized
+        window.addEventListener( 'resize', onWindowResize, false );
+
+        //add controls for interacting with the objects and moving about
+        controls = new OrbitControls(camera, canvasRenderer.domElement);
+        controls.addEventListener('change', canvasRenderer);
+
+        map = new THREE.TextureLoader().load( "ball.png" );
+
+        createSprites(data, THREE, addMetaInfo, scene, map);
+        render();
 
         function render() {
+            camera.lookAt(scene.position);
             requestAnimationFrame(render);
             canvasRenderer.render(scene, camera);
             controls.update();
-        }
 
+        }
     }//end init function
-  });//end getJson function
+
 })();
 
 module.exports = visApp;

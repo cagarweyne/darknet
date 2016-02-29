@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "jquery": "^2.2.0",
+    "sass-brunch": "^2.0.0",
     "three": "0.74.0",
     "three-orbit-controls": "72.0.0"
   },
