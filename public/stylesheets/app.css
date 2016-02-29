@@ -1,0 +1,26 @@
+/* line 4, /Users/abdi/Documents/intelliagg/tasks/visualization/darknet-vis/app/styles/main.scss */
+body {
+  background-color: #000000;
+  margin: 0 !important;
+  overflow: hidden;
+  font-family: Monospace;
+  font-size: 13px;
+  text-align: center;
+  font-weight: bold;
+  text-align: center; }
+
+/* line 15, /Users/abdi/Documents/intelliagg/tasks/visualization/darknet-vis/app/styles/main.scss */
+a {
+  color: #0078ff; }
+
+/* line 19, /Users/abdi/Documents/intelliagg/tasks/visualization/darknet-vis/app/styles/main.scss */
+#info {
+  color: #fff;
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  padding: 5px;
+  z-index: 100; }
+
+
+/*# sourceMappingURL=app.css.map*/
