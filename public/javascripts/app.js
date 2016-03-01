@@ -52155,9 +52155,9 @@ var visApp = function () {
       legal: 0xFFFFFF,
       news_media: 0xFFFFFF,
       other: 0xFFFFFF,
-      porno_fetish: 0x9324c6,
+      porno_fetish: 0xFFFFFF,
       promotion: 0xFFFFFF,
-      weapons: 0xFFFFFF
+      weapons: 0x9324c6
     };
 
     console.log(colors);
