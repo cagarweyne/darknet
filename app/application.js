@@ -36,7 +36,79 @@ var visApp = (function() {
       var controls, map;
 
       var currentSelectedObject = { lines: [], sprites: [], labels: [] };
+
+      var category = {};
+
+      data.reduce(function(acc, object, i, arr){
+
+        if(object.autoClass) {
+          if(typeof object.autoClass === 'object'){
+            //loop over it and extract each cat into the category obj
+            for(var k=0;k<object.autoClass.length; k++) {
+              if(!category[object.autoClass[k]]) {
+                category[object.autoClass[k]] = { category: object.autoClass[k], count: 1};
+              } else {
+                category[object.autoClass[k]].count++;
+              }
+            }
+          } else {
+            if(!category[object.autoClass]) {
+              category[object.autoClass] = { category: object.autoClass, count: 1 }
+            } else {
+              category[object.autoClass].count++;
+            }
+          }
+        }
+
+        return acc;
+
+      }, category);
+
+      console.log(category);
+      console.log('total no of cat:', Object.keys(category).length);
+
       console.log('data length', data.length);
+
+      //colors for each category
+      //  var colors = {
+      //    c: 0xFFFFFF,
+      //    discussion_forum: 0xc991e2,
+      //    "discussion forum": 0xc991e2,
+      //    drugs: 0xc00000,
+      //    filesharing: 0xde20c5,
+      //    financial_Fraud: 0xbd4c00,
+      //    hacking: 0xaf3e20,
+      //    internet_computing: 0xffab0a,
+      //    "leaked data": 0xFFFFFF,
+      //    leaked_data: 0xFFFFFF,
+      //    legal: 0xFFFFFF,
+      //    news_media: 0xFFFFFF,
+      //    other: 0xFFFFFF,
+      //    porno_fetish: 0x9324c6,
+      //    promotion: 0xFFFFFF,
+      //    weapons: 0xfff7ae
+      //  };
+
+      var colors = {
+        c: 0xFFFFFF,
+        discussion_forum: 0xFFFFFF,
+        "discussion forum": 0xFFFFFF,
+        drugs: 0xFFFFFF,
+        filesharing: 0xFFFFFF,
+        financial_Fraud: 0xFFFFFF,
+        hacking: 0xFFFFFF,
+        internet_computing: 0xFFFFFF,
+        "leaked data": 0xFFFFFF,
+        leaked_data: 0xFFFFFF,
+        legal: 0xFFFFFF,
+        news_media: 0xFFFFFF,
+        other: 0xFFFFFF,
+        porno_fetish: 0x9324c6,
+        promotion: 0xFFFFFF,
+        weapons: 0xFFFFFF
+      };
+
+       console.log(colors)
 
       //run function to add coordLinks array to each particle object
       addLinks(data);
@@ -207,7 +279,7 @@ var visApp = (function() {
 
         map = new THREE.TextureLoader().load( "ball.png" );
 
-        createSprites(data, THREE, addMetaInfo, scene, map);
+        createSprites(data, THREE, addMetaInfo, scene, map, colors);
         render();
 
         function render() {

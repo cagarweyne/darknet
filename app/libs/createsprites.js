@@ -1,31 +1,43 @@
-module.exports = function createSprites(data, THREE, addMetaInfo, scene, map) {
+module.exports = function createSprites(data, THREE, addMetaInfo, scene, map, colors) {
 
     for (var x = 0; x < data.length; x++) {
-
         //loop over the coordLinks array and decorate each particle to have coordLinks array
         if(data[x].coordLinks){
-        var withLinksmaterial = new THREE.SpriteMaterial({map: map, color: 0xFFFFFF, transparent: true, opacity: 0.7 });
-        var sprite = new THREE.Sprite(withLinksmaterial);
+          var spriteColor;
+          if(typeof data[x].autoClass === 'object') {
+            var spriteColor = colors[data[x].autoClass[0]];
+            // for(var l=0; l<data[x].autoClass.length; l++) {
+            //   console.log('colorssss', colors[data[x].autoClass[l]]);
+            //   var spriteColor = colors[data[x].autoClass[l]];
+            // }
+          } else {
+            spriteColor = colors[data[x].autoClass];
+          }
 
-        //set the position of each particle in space
-        sprite.position.set(data[x].pos.x , data[x].pos.y, data[x].pos.z);
-        //sprite.position.set((Math.random() * 800 - 400) * 10 , (Math.random() * 800 - 400) * 10 , (Math.random() * 800 - 400) * 10 );
+          if(sprite === undefined) { console.log('color undefined', spriteColor); }
 
-        //set size of each particle
-        sprite.scale.x =  4;
-        sprite.scale.y =  4;
+          var withLinksmaterial = new THREE.SpriteMaterial({map: map, color: spriteColor, transparent: true, opacity: 0.7 });
+          var sprite = new THREE.Sprite(withLinksmaterial);
 
-        //give object a unique name
-        sprite.name = data[x].site;
+          //set the position of each particle in space
+          sprite.position.set(data[x].pos.x , data[x].pos.y, data[x].pos.z);
+          //sprite.position.set((Math.random() * 800 - 400) * 10 , (Math.random() * 800 - 400) * 10 , (Math.random() * 800 - 400) * 10 );
 
-        //add the coords of incoming links as prop to be used later - on click
-        sprite.coordLinks = data[x].coordLinks;
+          //set size of each particle
+          sprite.scale.x =  4;
+          sprite.scale.y =  4;
 
-        //call addMetaInfo function to decorate sprite with more data
-        addMetaInfo(data[x], sprite);
+          //give object a unique name
+          sprite.name = data[x].site;
 
-        //add the sprite to scene in space
-        scene.add(sprite);
+          //add the coords of incoming links as prop to be used later - on click
+          sprite.coordLinks = data[x].coordLinks;
+
+          //call addMetaInfo function to decorate sprite with more data
+          addMetaInfo(data[x], sprite);
+
+          //add the sprite to scene in space
+          scene.add(sprite);
 
         } else {
 
