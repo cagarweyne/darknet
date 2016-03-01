@@ -1,21 +1,24 @@
 module.exports = function createSprites(data, THREE, addMetaInfo, scene, map, colors) {
-
+    var spriteColor;
     for (var x = 0; x < data.length; x++) {
         //loop over the coordLinks array and decorate each particle to have coordLinks array
         if(data[x].coordLinks){
-          var spriteColor;
-          if(typeof data[x].autoClass === 'object') {
-            var spriteColor = colors[data[x].autoClass[0]];
-            // for(var l=0; l<data[x].autoClass.length; l++) {
-            //   console.log('colorssss', colors[data[x].autoClass[l]]);
-            //   var spriteColor = colors[data[x].autoClass[l]];
-            // }
+
+          if(data[x].autoClass) {
+            if(typeof data[x].autoClass === 'object') {
+              spriteColor = colors[data[x].autoClass[0]];
+            } else {
+              spriteColor = colors[data[x].autoClass];
+            }
           } else {
-            spriteColor = colors[data[x].autoClass];
+            spriteColor = 0xFFFFFF;
           }
 
-          if(sprite === undefined) { console.log('color undefined', spriteColor); }
+          if(!spriteColor) {
+            spriteColor = 0xFFFFFF;
+          }
 
+          spriteColor = parseInt(spriteColor);
           var withLinksmaterial = new THREE.SpriteMaterial({map: map, color: spriteColor, transparent: true, opacity: 0.7 });
           var sprite = new THREE.Sprite(withLinksmaterial);
 

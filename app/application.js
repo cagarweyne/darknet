@@ -38,10 +38,11 @@ var visApp = (function() {
       var currentSelectedObject = { lines: [], sprites: [], labels: [] };
 
       var category = {};
-
+      var counter = 0;
       data.reduce(function(acc, object, i, arr){
 
         if(object.autoClass) {
+          counter++;
           if(typeof object.autoClass === 'object'){
             //loop over it and extract each cat into the category obj
             for(var k=0;k<object.autoClass.length; k++) {
@@ -64,51 +65,25 @@ var visApp = (function() {
 
       }, category);
 
-      console.log(category);
-      console.log('total no of cat:', Object.keys(category).length);
-
-      console.log('data length', data.length);
-
       //colors for each category
-      //  var colors = {
-      //    c: 0xFFFFFF,
-      //    discussion_forum: 0xc991e2,
-      //    "discussion forum": 0xc991e2,
-      //    drugs: 0xc00000,
-      //    filesharing: 0xde20c5,
-      //    financial_Fraud: 0xbd4c00,
-      //    hacking: 0xaf3e20,
-      //    internet_computing: 0xffab0a,
-      //    "leaked data": 0xFFFFFF,
-      //    leaked_data: 0xFFFFFF,
-      //    legal: 0xFFFFFF,
-      //    news_media: 0xFFFFFF,
-      //    other: 0xFFFFFF,
-      //    porno_fetish: 0x9324c6,
-      //    promotion: 0xFFFFFF,
-      //    weapons: 0xfff7ae
-      //  };
-
-      var colors = {
-        c: 0xFFFFFF,
-        discussion_forum: 0xFFFFFF,
-        "discussion forum": 0xFFFFFF,
-        drugs: 0xFFFFFF,
-        filesharing: 0xFFFFFF,
-        financial_Fraud: 0xFFFFFF,
-        hacking: 0xFFFFFF,
-        internet_computing: 0xFFFFFF,
-        "leaked data": 0xFFFFFF,
-        leaked_data: 0xFFFFFF,
-        legal: 0xFFFFFF,
-        news_media: 0xFFFFFF,
-        other: 0xFFFFFF,
-        porno_fetish: 0xFFFFFF,
-        promotion: 0xFFFFFF,
-        weapons: 0x9324c6
-      };
-
-       console.log(colors)
+       var colors = {
+         c: 0xFFFFFF,
+         discussion_forum: 0xc991e2,
+         "discussion forum": 0xc991e2,
+         drugs: 0xc00000,
+         filesharing: 0xde30c5,
+         financial_Fraud: 0xbd4c00,
+         hacking: 0xaf3e20,
+         internet_computing: 0xffab0a,
+         "leaked data": 0xFFFFFF,
+         leaked_data: 0xFFFFFF,
+         legal: 0xFFFFFF,
+         news_media: 0xFFFFFF,
+         other: 0xFFFFFF,
+         porno_fetish: 0x9324c6,
+         promotion: 0xFFFFFF,
+         weapons: 0xfff7ae
+       };
 
       //run function to add coordLinks array to each particle object
       addLinks(data);
