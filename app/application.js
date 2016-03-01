@@ -36,7 +36,54 @@ var visApp = (function() {
       var controls, map;
 
       var currentSelectedObject = { lines: [], sprites: [], labels: [] };
-      console.log('data length', data.length);
+
+      var category = {};
+      var counter = 0;
+      data.reduce(function(acc, object, i, arr){
+
+        if(object.autoClass) {
+          counter++;
+          if(typeof object.autoClass === 'object'){
+            //loop over it and extract each cat into the category obj
+            for(var k=0;k<object.autoClass.length; k++) {
+              if(!category[object.autoClass[k]]) {
+                category[object.autoClass[k]] = { category: object.autoClass[k], count: 1};
+              } else {
+                category[object.autoClass[k]].count++;
+              }
+            }
+          } else {
+            if(!category[object.autoClass]) {
+              category[object.autoClass] = { category: object.autoClass, count: 1 }
+            } else {
+              category[object.autoClass].count++;
+            }
+          }
+        }
+
+        return acc;
+
+      }, category);
+
+      //colors for each category
+       var colors = {
+         c: 0xFFFFFF,
+         discussion_forum: 0xc991e2,
+         "discussion forum": 0xc991e2,
+         drugs: 0xc00000,
+         filesharing: 0xde30c5,
+         financial_Fraud: 0xbd4c00,
+         hacking: 0xaf3e20,
+         internet_computing: 0xffab0a,
+         "leaked data": 0xFFFFFF,
+         leaked_data: 0xFFFFFF,
+         legal: 0xFFFFFF,
+         news_media: 0xFFFFFF,
+         other: 0xFFFFFF,
+         porno_fetish: 0x9324c6,
+         promotion: 0xFFFFFF,
+         weapons: 0xfff7ae
+       };
 
       //run function to add coordLinks array to each particle object
       addLinks(data);
@@ -207,7 +254,7 @@ var visApp = (function() {
 
         map = new THREE.TextureLoader().load( "ball.png" );
 
-        createSprites(data, THREE, addMetaInfo, scene, map);
+        createSprites(data, THREE, addMetaInfo, scene, map, colors);
         render();
 
         function render() {

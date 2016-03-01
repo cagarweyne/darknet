@@ -31419,7 +31419,7 @@ THREE.LineDashedMaterial.prototype.copy = function ( source ) {
 	THREE.Material.prototype.copy.call( this, source );
 
 	this.color.copy( source.color );
-
+	
 	this.linewidth = source.linewidth;
 
 	this.scale = source.scale;
@@ -32874,7 +32874,7 @@ THREE.DataTexture = function ( data, width, height, format, type, mapping, wrapS
 
 	this.magFilter = magFilter !== undefined ? magFilter : THREE.NearestFilter;
 	this.minFilter = minFilter !== undefined ? minFilter : THREE.NearestFilter;
-
+	
 	this.flipY = false;
 	this.generateMipmaps  = false;
 
@@ -33634,11 +33634,11 @@ THREE.Bone.prototype = Object.create( THREE.Object3D.prototype );
 THREE.Bone.prototype.constructor = THREE.Bone;
 
 THREE.Bone.prototype.copy = function ( source ) {
-
+	
 	THREE.Object3D.prototype.copy.call( this, source );
-
+	
 	this.skin = source.skin;
-
+	
 	return this;
 
 };
@@ -33675,7 +33675,7 @@ THREE.Skeleton = function ( bones, boneInverses, useVertexTexture ) {
 		//       32x32 pixel texture max  256 bones * 4 pixels = (32 * 32)
 		//       64x64 pixel texture max 1024 bones * 4 pixels = (64 * 64)
 
-
+		
 		var size = Math.sqrt( this.bones.length * 4 ); // 4 pixels needed for 1 matrix
 		size = THREE.Math.nextPowerOfTwo( Math.ceil( size ) );
 		size = Math.max( size, 4 );
@@ -39169,7 +39169,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			var context = canvas.getContext( '2d' );
 			context.drawImage( image, 0, 0, canvas.width, canvas.height );
 
-			//console.warn( 'THREE.WebGLRenderer: image is not power of two (' + image.width + 'x' + image.height + '). Resized to ' + canvas.width + 'x' + canvas.height, image );
+			console.warn( 'THREE.WebGLRenderer: image is not power of two (' + image.width + 'x' + image.height + '). Resized to ' + canvas.width + 'x' + canvas.height, image );
 
 			return canvas;
 
@@ -43389,7 +43389,7 @@ THREE.SpritePlugin = function ( renderer, sprites ) {
 	}
 
 	function painterSortStable ( a, b ) {
-
+		
 		if ( a.renderOrder !== b.renderOrder ) {
 
 			return a.renderOrder - b.renderOrder;
@@ -46602,7 +46602,7 @@ THREE.CubicBezierCurve.prototype.getPoint = function ( t ) {
 
 	var b3 = THREE.ShapeUtils.b3;
 
-	return new THREE.Vector2(
+	return new THREE.Vector2( 
 		b3( t, this.v0.x, this.v1.x, this.v2.x, this.v3.x ),
 		b3( t, this.v0.y, this.v1.y, this.v2.y, this.v3.y )
 	);
@@ -46613,7 +46613,7 @@ THREE.CubicBezierCurve.prototype.getTangent = function( t ) {
 
 	var tangentCubicBezier = THREE.CurveUtils.tangentCubicBezier;
 
-	return new THREE.Vector2(
+	return new THREE.Vector2( 
 		tangentCubicBezier( t, this.v0.x, this.v1.x, this.v2.x, this.v3.x ),
 		tangentCubicBezier( t, this.v0.y, this.v1.y, this.v2.y, this.v3.y )
 	).normalize();
@@ -46675,7 +46675,7 @@ THREE.EllipseCurve = function ( aX, aY, xRadius, yRadius, aStartAngle, aEndAngle
 	this.aEndAngle = aEndAngle;
 
 	this.aClockwise = aClockwise;
-
+	
 	this.aRotation = aRotation || 0;
 
 };
@@ -46701,7 +46701,7 @@ THREE.EllipseCurve.prototype.getPoint = function ( t ) {
 		angle = this.aStartAngle + t * deltaAngle;
 
 	}
-
+	
 	var x = this.aX + this.xRadius * Math.cos( angle );
 	var y = this.aY + this.yRadius * Math.sin( angle );
 
@@ -46784,7 +46784,7 @@ THREE.QuadraticBezierCurve3 = THREE.Curve.create(
 
 	function ( t ) {
 
-		var b2 = THREE.ShapeUtils.b2;
+		var b2 = THREE.ShapeUtils.b2;		
 
 		return new THREE.Vector3(
 			b2( t, this.v0.x, this.v1.x, this.v2.x ),
@@ -50188,7 +50188,7 @@ THREE.ArrowHelper = ( function () {
 		if ( headWidth === undefined ) headWidth = 0.2 * headLength;
 
 		this.position.copy( origin );
-
+		
 		this.line = new THREE.Line( lineGeometry, new THREE.LineBasicMaterial( { color: color } ) );
 		this.line.matrixAutoUpdate = false;
 		this.add( this.line );
@@ -52052,6 +52052,8 @@ THREE.OrbitControls.prototype = Object.create(THREE.EventDispatcher.prototype);
 require.register("application", function(exports, require, module) {
 "use strict";
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 var THREE = require('three');
 var OrbitControls = require('three-orbit-controls')(THREE);
 var $ = require('jquery');
@@ -52087,7 +52089,53 @@ var visApp = function () {
     var controls, map;
 
     var currentSelectedObject = { lines: [], sprites: [], labels: [] };
-    console.log('data length', data.length);
+
+    var category = {};
+    var counter = 0;
+    data.reduce(function (acc, object, i, arr) {
+
+      if (object.autoClass) {
+        counter++;
+        if (_typeof(object.autoClass) === 'object') {
+          //loop over it and extract each cat into the category obj
+          for (var k = 0; k < object.autoClass.length; k++) {
+            if (!category[object.autoClass[k]]) {
+              category[object.autoClass[k]] = { category: object.autoClass[k], count: 1 };
+            } else {
+              category[object.autoClass[k]].count++;
+            }
+          }
+        } else {
+          if (!category[object.autoClass]) {
+            category[object.autoClass] = { category: object.autoClass, count: 1 };
+          } else {
+            category[object.autoClass].count++;
+          }
+        }
+      }
+
+      return acc;
+    }, category);
+
+    //colors for each category
+    var colors = {
+      c: 0xFFFFFF,
+      discussion_forum: 0xc991e2,
+      "discussion forum": 0xc991e2,
+      drugs: 0xc00000,
+      filesharing: 0xde30c5,
+      financial_Fraud: 0xbd4c00,
+      hacking: 0xaf3e20,
+      internet_computing: 0xffab0a,
+      "leaked data": 0xFFFFFF,
+      leaked_data: 0xFFFFFF,
+      legal: 0xFFFFFF,
+      news_media: 0xFFFFFF,
+      other: 0xFFFFFF,
+      porno_fetish: 0x9324c6,
+      promotion: 0xFFFFFF,
+      weapons: 0xfff7ae
+    };
 
     //run function to add coordLinks array to each particle object
     addLinks(data);
@@ -52250,7 +52298,7 @@ var visApp = function () {
 
     map = new THREE.TextureLoader().load("ball.png");
 
-    createSprites(data, THREE, addMetaInfo, scene, map);
+    createSprites(data, THREE, addMetaInfo, scene, map, colors);
     render();
 
     function render() {
@@ -52390,59 +52438,76 @@ module.exports = function (THREE, intersects, currentSelectedObject, scene) {
 });
 
 ;require.register("libs/createsprites", function(exports, require, module) {
-"use strict";
+'use strict';
 
-module.exports = function createSprites(data, THREE, addMetaInfo, scene, map) {
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-    for (var x = 0; x < data.length; x++) {
+module.exports = function createSprites(data, THREE, addMetaInfo, scene, map, colors) {
+  var spriteColor;
+  for (var x = 0; x < data.length; x++) {
+    //loop over the coordLinks array and decorate each particle to have coordLinks array
+    if (data[x].coordLinks) {
 
-        //loop over the coordLinks array and decorate each particle to have coordLinks array
-        if (data[x].coordLinks) {
-            var withLinksmaterial = new THREE.SpriteMaterial({ map: map, color: 0xFFFFFF, transparent: true, opacity: 0.7 });
-            var sprite = new THREE.Sprite(withLinksmaterial);
-
-            //set the position of each particle in space
-            sprite.position.set(data[x].pos.x, data[x].pos.y, data[x].pos.z);
-            //sprite.position.set((Math.random() * 800 - 400) * 10 , (Math.random() * 800 - 400) * 10 , (Math.random() * 800 - 400) * 10 );
-
-            //set size of each particle
-            sprite.scale.x = 4;
-            sprite.scale.y = 4;
-
-            //give object a unique name
-            sprite.name = data[x].site;
-
-            //add the coords of incoming links as prop to be used later - on click
-            sprite.coordLinks = data[x].coordLinks;
-
-            //call addMetaInfo function to decorate sprite with more data
-            addMetaInfo(data[x], sprite);
-
-            //add the sprite to scene in space
-            scene.add(sprite);
+      if (data[x].autoClass) {
+        if (_typeof(data[x].autoClass) === 'object') {
+          spriteColor = colors[data[x].autoClass[0]];
         } else {
-
-            //set white color for each particle with no links
-            var material = new THREE.SpriteMaterial({ map: map, color: 0x990000, transparent: true, opacity: 0.7 });
-
-            var sprite = new THREE.Sprite(material);
-            //set the position of each particle in space
-            sprite.position.set(data[x].pos.x, data[x].pos.y, data[x].pos.z);
-
-            //set size of each particle - no links smaller
-            sprite.scale.x = 2;
-            sprite.scale.y = 2;
-
-            //give object a unique name
-            sprite.name = data[x].site;
-
-            //call addMetaInfo function to decorate sprite with more data
-            addMetaInfo(data[x], sprite);
-
-            //add the sprite to scene in space
-            scene.add(sprite);
+          spriteColor = colors[data[x].autoClass];
         }
-    } //end for loop
+      } else {
+        spriteColor = 0xFFFFFF;
+      }
+
+      if (!spriteColor) {
+        spriteColor = 0xFFFFFF;
+      }
+
+      spriteColor = parseInt(spriteColor);
+      var withLinksmaterial = new THREE.SpriteMaterial({ map: map, color: spriteColor, transparent: true, opacity: 0.7 });
+      var sprite = new THREE.Sprite(withLinksmaterial);
+
+      //set the position of each particle in space
+      sprite.position.set(data[x].pos.x, data[x].pos.y, data[x].pos.z);
+      //sprite.position.set((Math.random() * 800 - 400) * 10 , (Math.random() * 800 - 400) * 10 , (Math.random() * 800 - 400) * 10 );
+
+      //set size of each particle
+      sprite.scale.x = 4;
+      sprite.scale.y = 4;
+
+      //give object a unique name
+      sprite.name = data[x].site;
+
+      //add the coords of incoming links as prop to be used later - on click
+      sprite.coordLinks = data[x].coordLinks;
+
+      //call addMetaInfo function to decorate sprite with more data
+      addMetaInfo(data[x], sprite);
+
+      //add the sprite to scene in space
+      scene.add(sprite);
+    } else {
+
+      //set white color for each particle with no links
+      var material = new THREE.SpriteMaterial({ map: map, color: 0x990000, transparent: true, opacity: 0.7 });
+
+      var sprite = new THREE.Sprite(material);
+      //set the position of each particle in space
+      sprite.position.set(data[x].pos.x, data[x].pos.y, data[x].pos.z);
+
+      //set size of each particle - no links smaller
+      sprite.scale.x = 2;
+      sprite.scale.y = 2;
+
+      //give object a unique name
+      sprite.name = data[x].site;
+
+      //call addMetaInfo function to decorate sprite with more data
+      addMetaInfo(data[x], sprite);
+
+      //add the sprite to scene in space
+      scene.add(sprite);
+    }
+  } //end for loop
 }; //end createSprites function
 });
 
