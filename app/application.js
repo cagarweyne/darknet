@@ -21,6 +21,9 @@ var visApp = (function() {
 
       //show our div element that will contain the details for each node
       $('.node-detail-container').show();
+
+      //also show the legend
+      $('.legend').show();
       $('#loader-wrapper').hide();
 
     }).fail(function(){
