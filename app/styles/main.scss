@@ -15,7 +15,7 @@ body {
 
 .node-detail-container {
   position: fixed;
-  top: 75%;
+  top: 70%;
   left: 1%;
   color: #fff;
   text-align: left;
@@ -87,6 +87,47 @@ a:hover {
   left: 1%;
   padding-top: 2%;
   z-index: 1100;
+}
+
+.legend span {
+    display: inline-block;
+    height: 30px;
+    width: 30px;
+    line-height: 35px;
+    -moz-border-radius: 30px;
+    border-radius: 30px;
+    background-color: black;
+    color: #000;
+    text-align: center;
+    font-size: 1em;
+}
+
+.drugs {
+  background: #c00000 !important;
+}
+
+.hacking {
+  background: #af3e20 !important;
+}
+
+.weapons {
+  background: #fff7ae !important;
+}
+
+.porno-fetish {
+  background: #9324c6 !important;
+}
+
+.other {
+  background: #fff !important;
+}
+
+.legend {
+  color: #fff;
+  position: absolute;
+  top: 70%;
+  left: 85%;
+  text-align: left;
 }
 
 /* ==========================================================================
